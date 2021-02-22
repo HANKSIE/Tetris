@@ -65,7 +65,7 @@ export default class Game {
      */
     public randomLeftPos(tetris : Tetris) : number  {
         const length : number  = this._scene.column - tetris.width;
-        const randomX : number  = Math.floor(Math.random() * length);
+        const randomX : number  = Math.floor(Math.random() * (length + 1));
         return randomX;
     }
 
