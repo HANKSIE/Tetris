@@ -1,3 +1,5 @@
+import Tetris from "./tetris";
+
 interface DrawConfig {
     row : number, 
     column : number, 
@@ -16,6 +18,10 @@ export default class Scene {
 
     public get column(){
         return this._config.column;
+    }
+
+    public get unit(){
+        return this._config.unit;
     }
 
     constructor(canvas : HTMLCanvasElement, contextDimention : string = "2d", config : DrawConfig){
@@ -55,6 +61,24 @@ export default class Scene {
             this._ctx.stroke();
         }
   
+    }
+
+    public drawTetris(tetris : Tetris){
+        tetris.cubes.forEach(cube => {
+            this._ctx.beginPath();
+            const x = cube.mapPos.x * this.unit;
+            const y = cube.mapPos.y * this.unit;
+            this._ctx.rect(x, y, this.unit , this.unit);
+            this._ctx.fillStyle = cube.color;
+            this._ctx.fill();
+            this._ctx.stroke();
+        });
+    }
+
+    public draw(tetris : Tetris){
+        this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this.drawGrid();
+        this.drawTetris(tetris);
     }
 
 }

@@ -1,5 +1,6 @@
 import Cube from "./cube";
 import CubeFactory from "../factory/cube";
+import { Point } from "../interfaces/coordinate";
 
 type Shape = Array<Array<number>>;
 
@@ -23,10 +24,20 @@ export default abstract class Tetris {
         return this._shape;
     }
 
+    public get width(){
+        return this._shape[0].length;
+    }
+
+    public get height(){
+        return this._shape.length;
+    }
+
     public abstract shapeDefine() : Shape;
 
-    constructor(color : string){
-        this._color = color;
+    public abstract colorDefine() : string;
+
+    constructor(){
+        this._color = this.colorDefine();
         this._shape = Tetris.cut(this.shapeDefine());
         this._cubes = Tetris.generateCubes(this._shape, this._color);
     }
@@ -35,6 +46,8 @@ export default abstract class Tetris {
      * 裁減在 shapeDefine 定義的形狀
      * 
      * @param shape
+     * 
+     * @returns {Shape}
      */
     private static cut(shape : Shape) : Shape {
         const row = shape.length;
@@ -94,13 +107,18 @@ export default abstract class Tetris {
 
         shape.forEach((row, r) => {
             row.forEach((element, c) => {
-                if(element){
+                if(element === ShapeValue.DEFINED){
                     cubes.push(CubeFactory.createCube(color, {x: c, y: r}));
                 }
             });
         });
 
         return cubes;
+    }
+
+    public findCubeByPos(pos : Point) : Cube {
+        const cube = this.cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
+        return cube!;
     }
 
 }
