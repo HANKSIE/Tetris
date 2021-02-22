@@ -1,6 +1,6 @@
-// import Tetris from "../widgets/tetris";
+import Tetris from "../widgets/tetris";
+import Looper from "../looper";
 
 export default interface KeyboardOperate{
-    // handle(event : KeyboardEvent, tetris : Tetris) : void;
-    handle(event : KeyboardEvent) : void;
+    handle(event : KeyboardEvent, tetris : Tetris, mainLooper : Looper) : void;
 }

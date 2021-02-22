@@ -47,6 +47,8 @@ export default class Scene {
         
         const { row, column, unit } = this._config;
 
+        this._ctx.strokeStyle = "#777777";
+
         for(let r=0; r < row; r++){
             this._ctx.beginPath();
             this._ctx.moveTo(0, r * unit +unit);
@@ -64,6 +66,8 @@ export default class Scene {
     }
 
     public drawTetris(tetris : Tetris){
+        this._ctx.strokeStyle = "#555555";
+
         tetris.cubes.forEach(cube => {
             this._ctx.beginPath();
             const x = cube.mapPos.x * this.unit;

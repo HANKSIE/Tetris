@@ -1,56 +1,67 @@
 import Scene from "./widgets/scene";
 import Tetris from "./widgets/tetris";
-import Cube from "./widgets/cube";
 import Looper from "./looper";
 import KeyboardOperate from "./operates/keyboard";
 import TetrisFactory from "./factory/tetris";
-
-type MapShape = Array<Array<Cube | null>>;
 export default class Game {
 
     private _scene : Scene;
-    private _looper : Looper;
+    private _downLooper : Looper;
+    private _drawLooper : Looper;
     private _currTetris : Tetris;
     private _tetrises : Tetris[] = [];
     public _tetrisType : string[] = [];
-    private _map : MapShape = [];
-    private _keyboardOperates : KeyboardOperate[] = [];
+    private _keydownEvents : KeyboardOperate[] = [];
+    private _keyupEvents : KeyboardOperate[] = [];
 
-    constructor(scene : Scene, tetrisType : string[], keyboardOperates : KeyboardOperate[]){
+    constructor(scene : Scene, tetrisType : string[], keydownEvents : KeyboardOperate[] = [], keyupEvents: KeyboardOperate[] = []){
         this._scene = scene;
-        this._looper = new Looper(() => {this.update();}, 1000);
+        this._downLooper = new Looper(() => {this.update();}, 500);
+        this._drawLooper = new Looper(() => {this._scene.draw(this._currTetris);}, 50);
         this._tetrisType = tetrisType;
-        this._keyboardOperates = keyboardOperates;
+        this._keydownEvents = keydownEvents;
+        this._keyupEvents = keyupEvents;
 
-        const {row, column} = scene;
-        this._map = new Array(row).fill(new Array(column).fill(null));
         this.registerKeyBoardEvent();
 
         this._currTetris = this.generateTetris();
     }
 
     private registerKeyBoardEvent(){
+
         document.addEventListener("keydown", (event : KeyboardEvent) => {
-            this._keyboardOperates.forEach( operate => {
-                // operate.handle(event, this._currTeries);
-                operate.handle(event);
+            this._keydownEvents.forEach( operate => {
+                operate.handle(event, this._currTetris, this._downLooper);
+            });
+        });
+
+        document.addEventListener("keyup", (event : KeyboardEvent) => {
+            this._keyupEvents.forEach( operate => {
+                operate.handle(event, this._currTetris, this._downLooper);
             });
         });
     }
 
     private update(){
         this.down();
+        this._scene.draw(this._currTetris);
     }
 
     private down(){
         this._currTetris.cubes.forEach(cube => {
             cube.mapPos.y++;
         });
-
-        this._scene.draw(this._currTetris);
     }
 
-    public randomPickTetris() : Tetris{
+    private canDown(){
+
+    }
+
+    private isBoundary(currTetris : Tetris){
+
+    }
+
+    private randomPickTetris() : Tetris{
         const random : number = Math.floor(Math.random() * this._tetrisType.length);
         const pick : string = this._tetrisType[random];
         return TetrisFactory.create(pick);
@@ -63,13 +74,13 @@ export default class Game {
      * 
      * @returns {number}
      */
-    public randomLeftPos(tetris : Tetris) : number  {
+    private randomLeftPos(tetris : Tetris) : number  {
         const length : number  = this._scene.column - tetris.width;
         const randomX : number  = Math.floor(Math.random() * (length + 1));
         return randomX;
     }
 
-    public generateTetris(){
+    private generateTetris(){
         const tetris = this.randomPickTetris();
         const leftX = this.randomLeftPos(tetris);
 
@@ -83,11 +94,13 @@ export default class Game {
     }
 
     public start(){
-        this._looper.start();
+        this._downLooper.start();
+        this._drawLooper.start();
     }
 
     public stop(){
-        this._looper.stop();
+        this._downLooper.stop();
+        this._drawLooper.stop();
     }
 
 }

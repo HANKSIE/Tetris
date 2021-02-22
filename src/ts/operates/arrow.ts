@@ -1,36 +1,57 @@
 import KeyboardOperate from "./keyboard";
+import Tetris from "../widgets/tetris";
+import Looper from "../looper";
 
 const moveToLeft : KeyboardOperate = {
-    handle(event : KeyboardEvent) {
+    handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowLeft"){
-            console.log("左");
+            tetris.cubes.forEach(cube => {
+                cube.mapPos.x--;
+            });
         }
     }
 };
 
 const moveToRight : KeyboardOperate = {
-    handle(event : KeyboardEvent) {
+    handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowRight"){
-            console.log("右");
+            tetris.cubes.forEach(cube => {
+                cube.mapPos.x++;
+            });
         }
     }
 };
+
 
 const rotate : KeyboardOperate = {
-    handle(event : KeyboardEvent) {
+    handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowUp"){
-            console.log("上");
+            //逆時針旋轉
         }
     }
 };
+
+let isPressDown = false;
+const speed = 400;
 
 const quickDown : KeyboardOperate = {
-    handle(event : KeyboardEvent) {
+    handle(event : KeyboardEvent, tetris : Tetris, downLooper : Looper) {
         if(event.key === "ArrowDown"){
-            console.log("下");
+            if(!isPressDown){
+                downLooper.ms = downLooper.ms - speed;
+                isPressDown = true;
+            }
         }
     }
-    
 };
 
-export { moveToLeft, moveToRight, rotate, quickDown };
+const normalDown : KeyboardOperate = {
+    handle(event : KeyboardEvent, tetris : Tetris, downLooper : Looper) {
+        if(event.key === "ArrowDown"){
+            downLooper.ms = downLooper.ms + speed;
+            isPressDown = false;
+        }
+    }
+};
+
+export { moveToLeft, moveToRight, rotate, quickDown, normalDown};

@@ -9,6 +9,8 @@ export default class Looper {
 
     public set ms(val : number) {
         this._ms = val;
+        this.destroy();
+        this.start();
     }
 
     private updateHandle : Function;
@@ -23,6 +25,10 @@ export default class Looper {
     }
 
     public stop() {
+        this.destroy();
+    }
+
+    private destroy() {
         clearInterval(this._timerID);
     }
 

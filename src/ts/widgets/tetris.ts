@@ -16,19 +16,19 @@ export default abstract class Tetris {
     protected _shape :  Shape;
     protected _cubes : Cube[];
 
-    public get cubes(){
+    public get cubes() : Cube[]{
         return this._cubes;
     }
 
-    public get shape(){
+    public get shape() : Shape{
         return this._shape;
     }
 
-    public get width(){
+    public get width() : number{
         return this._shape[0].length;
     }
 
-    public get height(){
+    public get height() : number{
         return this._shape.length;
     }
 
