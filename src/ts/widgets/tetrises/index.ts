@@ -8,7 +8,10 @@ class ITetris extends Tetris {
 
     public shapeDefine(): number[][] {
         return [
+            [0,0,0,0],
             [1,1,1,1],
+            [0,0,0,0],
+            [0,0,0,0],
         ];
     }
 
@@ -24,6 +27,7 @@ class JTetris extends Tetris {
         return [
             [1,0,0],
             [1,1,1],
+            [0,0,0],
         ];
     }
 
@@ -39,6 +43,7 @@ class LTetris extends Tetris {
         return [
             [0,0,1],
             [1,1,1],
+            [0,0,0],
         ];
     }
 
@@ -69,6 +74,7 @@ class STetris extends Tetris {
         return [
             [0,1,1],
             [1,1,0],
+            [0,0,0],
         ];
     }
 
@@ -84,6 +90,7 @@ class TTetris extends Tetris {
         return [
             [0,1,0],
             [1,1,1],
+            [0,0,0],
         ];
     }
 
@@ -99,6 +106,7 @@ class ZTetris extends Tetris {
         return [
             [1,1,0],
             [0,1,1],
+            [0,0,0],
         ];
     }
 }
