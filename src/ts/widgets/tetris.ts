@@ -23,10 +23,6 @@ export default abstract class Tetris {
 
     protected _cubes : Cube[] = [];
 
-    public get cubes() : Cube[]{
-        return this._cubes;
-    }
-
     public get width() : number{
         return this._currentShape[0].length;
     }
@@ -44,6 +40,13 @@ export default abstract class Tetris {
         this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
     
+    public get points() : Point[] {
+        return this._cubes.map(cube => cube.pos);
+    }
+
+    public get color() : string {
+        return this._color;
+    }
 
     public abstract shapeDefine() : Shape;
 
@@ -73,12 +76,7 @@ export default abstract class Tetris {
     }
 
     public findCubeByPos(pos : Point) : Cube | undefined{
-        const cube = this.cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
-        return cube;
-    }
-
-    public findCubeBypos(pos : Point) : Cube | undefined{
-        const cube = this.cubes.find(cube => cube.pos.x === this.pos.x && cube.pos.y === pos.y);
+        const cube = this._cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
         return cube;
     }
 
@@ -137,6 +135,8 @@ export default abstract class Tetris {
     }
 
     public back(){
+        console.log("back");
+        console.log(this._prevPos);
         this._pos = {x: this._prevPos.x, y: this._prevPos.y};
     }
 

@@ -10,26 +10,26 @@ export default class Cube {
         return this._color;
     }
 
-    public get pos() {
+    public get relationPos() {
         return this._relationPos;
     }
 
-    public set pos(value : Point) {
+    public set relationPos(value : Point) {
         this._relationPos = value;
     }
 
-    public get mapPos() {
+    public get pos() {
         return this._pos;
     }
 
-    public set mapPos(value : Point) {
+    public set pos(value : Point) {
         this._pos = value;
     }
 
-    constructor(color : string, pos : Point, mapPos : Point){
+    constructor(color : string, relationPos : Point, pos : Point){
         this._color = color;
-        this._relationPos = pos;
-        this._pos = mapPos
+        this._relationPos = relationPos;
+        this._pos = pos;
     }
     
 }

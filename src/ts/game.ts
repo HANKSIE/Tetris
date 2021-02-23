@@ -3,14 +3,19 @@ import Tetris from "./widgets/tetris";
 import Looper from "./looper";
 import KeyboardOperate from "./operates/keyboard";
 import TetrisFactory from "./factory/tetris";
+import { Point } from "./interfaces/coordinate";
 export default class Game {
 
     private _scene : Scene;
+
     private _downLooper : Looper;
     private _drawLooper : Looper;
+
     private _currTetris : Tetris;
-    public _tetrisType : string[] = [];
-    public _tetrises : Tetris[] = [];
+    private _tetrises : Tetris[] = [];
+
+    private _boundaries : Point[] = [];
+
     private _keydownEvents : KeyboardOperate[] = [];
     private _keyupEvents : KeyboardOperate[] = [];
 
@@ -18,12 +23,17 @@ export default class Game {
         this._scene = scene;
         this._currTetris = TetrisFactory.createRandom(this._scene.column);
         this._tetrises.push(this._currTetris);
-        this._downLooper = new Looper(() => {this.update();}, 450);
+        this._downLooper = new Looper(() => {
+            this.update();
+            this.operateHandle();
+        }, 450);
         this._drawLooper = new Looper(() => {this._scene.draw(this._tetrises);}, 50);
         this._keydownEvents = keydownEvents;
         this._keyupEvents = keyupEvents;
 
-        this.registerKeyBoardEvent();       
+        this._boundaries = Game.createBoundaries(this._scene);
+        
+        this.registerKeyBoardEvent();
     }
 
     private registerKeyBoardEvent(){
@@ -46,34 +56,54 @@ export default class Game {
         this._currTetris.update();
     }
 
-    private isCollision(tetris : Tetris){
-        //boundary detect
-        const Boundary = {
-            up: -1,
-            down: this._scene.row,
-            left: -1,
-            right: this._scene.column,
-        };
+    private static createBoundaries(scene : Scene) : Point[]{
+        const boundaries : Point[] = [];
 
-        //cubes detect
+        const { row, column } = scene;
+
+        for(let r = -1; r <= row ; r++){
+            if(r === -1 || r === row){
+                for(let i = 0; i < column; i++){
+                    boundaries.push({x: i, y: r});
+                }
+            }
+            boundaries.push({x: -1, y: r});
+            boundaries.push({x: column, y: r});
+        }
+        console.log(boundaries);
+        return boundaries;
     }
 
-    // private operateHandle() {
-    //     const nextCubesMapPos = this._currTetris.nextCubes.map(cube => cube.mapPos);
+    private operateHandle(){
 
-    //     for(let i = 0; i < this._tetrises.length; i++){
-    //         const currTetris = this._tetrises[i];
-    //         if(currTetris !== this._currTetris){
-    //             for(let j = 0; j < nextCubesMapPos.length; j++){
-    //                 if (currTetris.findCubeByMapPos(nextCubesMapPos[j])){
-    //                     this._currTetris.back();
-    //                 }
-    //             }
-    //         }
-    //     }
+        const points = this._currTetris.points;
 
-    //     this._currTetris.update();
-    // }
+        for(let i = 0; i < this._tetrises.length; i++){
+            const currTetris = this._tetrises[i];
+            if(currTetris !== this._currTetris){
+                for(let j = 0; j < points.length; j++){
+                    if (currTetris.findCubeByPos(points[j])){
+                        this._currTetris.back();
+                        return;
+                    }
+                }
+            }
+        }
+
+        for(let i = 0; i < this._boundaries.length; i++){
+            const boundary = this._boundaries[i];
+            for(let j = 0; j < points.length; j++){
+                if (points[j].x === boundary.x && points[j].y === boundary.y){
+                    this._currTetris.back();
+                    return;
+                }
+            }
+        }
+
+        this._currTetris.update();
+
+    }
+
 
     public start(){
         this._downLooper.start();

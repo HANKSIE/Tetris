@@ -7,9 +7,9 @@ export default class CubeFactory {
     }
 
     public static createByCube(cube : Cube) : Cube{
-        const { color, pos, mapPos } = cube;
+        const { color, relationPos, pos } = cube;
 
-        return new Cube(color, {x: pos.x, y: pos.y}, {x: mapPos.x, y: mapPos.y});
+        return new Cube(color, {x: relationPos.x, y: relationPos.y}, {x: pos.x, y: pos.y});
     }
 
 }
