@@ -4,7 +4,7 @@ export default class Cube {
 
     private _color : string;
     private _pos : Point;
-    private _mapPos : Point = {x: -1, y: -1};
+    private _mapPos : Point;
 
     public get color(){
         return this._color;
@@ -26,9 +26,10 @@ export default class Cube {
         this._mapPos = value;
     }
 
-    constructor(color : string, pos : Point){
+    constructor(color : string, pos : Point, mapPos : Point){
         this._color = color;
         this._pos = pos;
+        this._mapPos = mapPos
     }
     
 }

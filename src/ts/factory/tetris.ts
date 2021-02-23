@@ -13,12 +13,8 @@ export default class TetrisFactory {
         const tetris = TetrisFactory.randomPickTetris();
         const leftX = TetrisFactory.randomLeftPos(tetris, sceneColumn);
 
-        tetris.cubes.forEach(cube => {
-            const x = leftX + cube.pos.x;
-            const y = cube.pos.y - tetris.height;
-            cube.mapPos = {x, y};
-        });
-
+        tetris.mapPos = {x: leftX, y: -tetris.height};
+        
         return tetris;
     }
 

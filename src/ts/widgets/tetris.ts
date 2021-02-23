@@ -15,17 +15,13 @@ export default abstract class Tetris {
     protected _color : string;
     protected _originShape :  Shape;
     protected _currentShape :  Shape;
-    // protected _nextShape : Shape;
-    protected _cubes : Cube[];
-    // protected _nextCubes : Cube[];
+    protected _cubes : Cube[] = [];
+  
+    protected _mapPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
 
     public get cubes() : Cube[]{
         return this._cubes;
     }
-
-    // public get nextCubes() : Cube[]{
-    //     return this._nextCubes;
-    // }
 
     public get originShape() : Shape{
         return this._originShape;
@@ -43,21 +39,14 @@ export default abstract class Tetris {
         return this._currentShape.length;
     }
 
-    //tetris實際座標 (_cubes中最小的座標)
     public get mapPos() : Point {
-        const p : Point = {x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER};
+        return this._mapPos;
+    }
 
-        this._cubes.forEach(cube => {
-            const {x, y} = cube.mapPos;
-            if(x < p.x){
-                p.x = x;
-            }
-            if(y < p.y){
-                p.y = y;
-            }
-        });
-
-        return p;
+    public set mapPos(value : Point) {
+        this._mapPos = value;
+        this._cubes = this.generateCubes(this._currentShape, this._color);
+        console.log(this._cubes);
     }
 
     public abstract shapeDefine() : Shape;
@@ -66,81 +55,18 @@ export default abstract class Tetris {
 
     constructor(){
         this._color = this.colorDefine();
-        this._originShape = Tetris.cut(this.shapeDefine());
+        this._originShape = this.shapeDefine();
         this._currentShape = this._originShape.slice();
-        // this._nextShape = this._originShape.slice();
-
-        this._cubes = Tetris.generateCubes(this._originShape, this._color);
-        // this._nextCubes = this._cubes;
     }
 
-    /**
-     * 裁剪 shapeDefine 定義的形狀
-     * 
-     * @param shape
-     * 
-     * @returns {Shape}
-     */
-    private static cut(shape : Shape) : Shape {
-        const row = shape.length;
-
-        let leftBound , rightBound, upBound, downBound;
-        leftBound = rightBound = upBound = downBound = ShapeValue.UNDEFINED;
-
-        for(let r = 0; r < row; r++){
-
-            //該row有包含1
-            if(shape[r].includes(ShapeValue.DEFINED)){
-                if(upBound === ShapeValue.UNDEFINED){
-                    upBound = r;
-                }
-                downBound = r;
-            }
-
-            //該row的長度
-            const col = shape[r].length;
-
-            for(let c = 0; c < col; c++){
-                const curr = shape[r][c];
-                if (curr === ShapeValue.DEFINED){
-                    if(leftBound === ShapeValue.UNDEFINED || c < leftBound){
-                        leftBound = c;
-                    }
-
-                    if(c > rightBound){
-                        rightBound = c;
-                    }
-                }
-            }
-        }
-
-        if(downBound === ShapeValue.UNDEFINED || upBound === ShapeValue.UNDEFINED || leftBound === ShapeValue.UNDEFINED || rightBound === ShapeValue.UNDEFINED) {
-            throw Error("不可定義空形狀");
-        }
-
-        const result : Shape = [];
-        const resultRow = downBound - upBound + 1;
-
-        for(let r = 0; r < resultRow; r++){
-            const curr : number[] = shape[r + upBound];
-            const newRow : number[] = [];
-            for(let c = leftBound; c <= rightBound; c++){
-                //若c >= curr.length 則塞入0
-                newRow.push(curr[c] || ShapeValue.EMPTY);
-            } 
-            result.push(newRow);
-        }
-
-        return result;
-    }
-
-    private static generateCubes(shape : Shape, color : string) : Cube[]{
+    private generateCubes(shape : Shape, color : string) : Cube[]{
         const cubes : Cube[]= [];
 
+        const { x, y } = this._mapPos;
         shape.forEach((row, r) => {
             row.forEach((element, c) => {
                 if(element === ShapeValue.DEFINED){
-                    cubes.push(CubeFactory.createCube(color, {x: c, y: r}));
+                    cubes.push(CubeFactory.createCube(color, {x: c, y: r}, {x: x + c, y: r + y}));
                 }
             });
         });
@@ -199,32 +125,16 @@ export default abstract class Tetris {
     }
 
     public moveToLeft(){
-        for(let i = 0; i < this._cubes.length; i++){
-            this._cubes[i].mapPos.x = this._cubes[i].mapPos.x - 1;
-        }
+        this.mapPos = {x: this.mapPos.x - 1, y: this.mapPos.y};
     }
 
     public moveToRight(){
-        for(let i = 0; i < this._cubes.length; i++){
-            this._cubes[i].mapPos.x = this._cubes[i].mapPos.x + 1;
-        }
+        this.mapPos = {x: this.mapPos.x + 1, y: this.mapPos.y};
     }
 
     public down(){
-        this.cubes.forEach(cube => {
-            cube.mapPos.y++;
-        });
+        this.mapPos = {x: this.mapPos.x, y: this.mapPos.y + 1};
     }
-
-    // public update(){
-    //     this._currentShape = this._nextShape;
-    //     this._cubes = this._nextCubes;
-    // }
-
-    // public back(){
-    //     this._nextShape = this._currentShape;
-    //     this._nextCubes = this._cubes;
-    // }
 
 }
 
