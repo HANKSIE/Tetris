@@ -65,24 +65,26 @@ export default class Scene {
   
     }
 
-    public drawTetris(tetris : Tetris){
+    public drawTetris(tetrises : Tetris[]){
         this._ctx.strokeStyle = "#555555";
-
-        tetris.cubes.forEach(cube => {
-            this._ctx.beginPath();
-            const x = cube.mapPos.x * this.unit;
-            const y = cube.mapPos.y * this.unit;
-            this._ctx.rect(x, y, this.unit , this.unit);
-            this._ctx.fillStyle = cube.color;
-            this._ctx.fill();
-            this._ctx.stroke();
-        });
+        tetrises.forEach(tetris => {
+            tetris.cubes.forEach(cube => {
+                this._ctx.beginPath();
+                const x = cube.mapPos.x * this.unit;
+                const y = cube.mapPos.y * this.unit;
+                this._ctx.rect(x, y, this.unit , this.unit);
+                this._ctx.fillStyle = cube.color;
+                this._ctx.fill();
+                this._ctx.stroke();
+            });
+        })
+       
     }
 
-    public draw(tetris : Tetris){
+    public draw(tetrises : Tetris[]){
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this.drawGrid();
-        this.drawTetris(tetris);
+        this.drawTetris(tetrises);
     }
 
 }

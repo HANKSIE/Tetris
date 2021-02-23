@@ -30,6 +30,5 @@ export default class Cube {
         this._color = color;
         this._pos = pos;
     }
-
     
 }

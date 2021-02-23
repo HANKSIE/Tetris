@@ -13,36 +13,51 @@ enum ShapeValue {
 export default abstract class Tetris {
 
     protected _color : string;
-    protected _shape :  Shape;
+    protected _originShape :  Shape;
     protected _currentShape :  Shape;
+    // protected _nextShape : Shape;
     protected _cubes : Cube[];
+    // protected _nextCubes : Cube[];
 
     public get cubes() : Cube[]{
         return this._cubes;
     }
 
-    public get shape() : Shape{
-        return this._shape;
-    }
+    // public get nextCubes() : Cube[]{
+    //     return this._nextCubes;
+    // }
 
-    public get width() : number{
-        return this._shape[0].length;
-    }
-
-    public get height() : number{
-        return this._shape.length;
+    public get originShape() : Shape{
+        return this._originShape;
     }
 
     public get currentShape() : Shape{
         return this._currentShape;
     }
 
-    public get currWidth() : number{
+    public get width() : number{
         return this._currentShape[0].length;
     }
 
-    public get currHeight() : number{
+    public get height() : number{
         return this._currentShape.length;
+    }
+
+    //tetris實際座標 (_cubes中最小的座標)
+    public get mapPos() : Point {
+        const p : Point = {x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER};
+
+        this._cubes.forEach(cube => {
+            const {x, y} = cube.mapPos;
+            if(x < p.x){
+                p.x = x;
+            }
+            if(y < p.y){
+                p.y = y;
+            }
+        });
+
+        return p;
     }
 
     public abstract shapeDefine() : Shape;
@@ -51,13 +66,16 @@ export default abstract class Tetris {
 
     constructor(){
         this._color = this.colorDefine();
-        this._shape = Tetris.cut(this.shapeDefine());
-        this._currentShape = this._shape.slice();
-        this._cubes = Tetris.generateCubes(this._shape, this._color);
+        this._originShape = Tetris.cut(this.shapeDefine());
+        this._currentShape = this._originShape.slice();
+        // this._nextShape = this._originShape.slice();
+
+        this._cubes = Tetris.generateCubes(this._originShape, this._color);
+        // this._nextCubes = this._cubes;
     }
 
     /**
-     * 裁減在 shapeDefine 定義的形狀
+     * 裁剪 shapeDefine 定義的形狀
      * 
      * @param shape
      * 
@@ -130,50 +148,83 @@ export default abstract class Tetris {
         return cubes;
     }
 
-    public findCubeByPos(pos : Point) : Cube {
+    public findCubeByPos(pos : Point) : Cube | undefined{
         const cube = this.cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
-        return cube!;
+        return cube;
+    }
+
+    public findCubeByMapPos(mapPos : Point) : Cube | undefined{
+        const cube = this.cubes.find(cube => cube.mapPos.x === this.mapPos.x && cube.mapPos.y === mapPos.y);
+        return cube;
     }
 
     public rotate(){
+        const row = this.height;
+        const col = this.width;
 
-        const row = this.currHeight;
-        const col = this.currWidth;
-
+        //創造二維陣列
         const initArr = [];
         for(let r=0; r<col; r++){
             initArr.push(Array(row).fill(ShapeValue.EMPTY));
         }
+
+        //初始化
         const newShape = initArr.slice();
 
         let newRow : number = 0;
+        const newCubes : Cube[]= [];
 
         for(let r=0; r < row; r++){
             newRow = col - 1;
             for(let c=0; c < col; c++){
-                newShape[newRow][r] = this._currentShape[r][c];
+                const val = this._currentShape[r][c]
+                newShape[newRow][r] = val;
 
-                const cube = this.findCubeByPos({x: c, y: r});
-                cube.pos = {x: r, y: newRow};
+                if(val === ShapeValue.DEFINED) {
+                    const originCube = this.findCubeByPos({x: c, y: r});
+                    if(originCube){
+                        const newCube = CubeFactory.createCube(this._color, {x: r, y: newRow});
+                        //tetris左上角之座標 + 偏移量
+                        newCube.mapPos = {x: r + this.mapPos.x,  y: newRow + this.mapPos.y};
+                        newCubes.push(newCube);
+                    }
+                }
+
                 newRow--;
             }
         }
 
-        this._currentShape = newShape.slice();
+        this._currentShape = newShape;
+        this._cubes = newCubes;
     }
 
     public moveToLeft(){
-        this._cubes.forEach(cube => {
-            cube.mapPos.x--;
-        });
+        for(let i = 0; i < this._cubes.length; i++){
+            this._cubes[i].mapPos.x = this._cubes[i].mapPos.x - 1;
+        }
     }
 
     public moveToRight(){
-        this._cubes.forEach(cube => {
-            cube.mapPos.x++;
+        for(let i = 0; i < this._cubes.length; i++){
+            this._cubes[i].mapPos.x = this._cubes[i].mapPos.x + 1;
+        }
+    }
+
+    public down(){
+        this.cubes.forEach(cube => {
+            cube.mapPos.y++;
         });
     }
 
+    // public update(){
+    //     this._currentShape = this._nextShape;
+    //     this._cubes = this._nextCubes;
+    // }
+
+    // public back(){
+    //     this._nextShape = this._currentShape;
+    //     this._nextCubes = this._cubes;
+    // }
 
 }
 
