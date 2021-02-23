@@ -14,6 +14,7 @@ export default abstract class Tetris {
 
     protected _color : string;
     protected _shape :  Shape;
+    protected _currentShape :  Shape;
     protected _cubes : Cube[];
 
     public get cubes() : Cube[]{
@@ -32,6 +33,18 @@ export default abstract class Tetris {
         return this._shape.length;
     }
 
+    public get currentShape() : Shape{
+        return this._currentShape;
+    }
+
+    public get currWidth() : number{
+        return this._currentShape[0].length;
+    }
+
+    public get currHeight() : number{
+        return this._currentShape.length;
+    }
+
     public abstract shapeDefine() : Shape;
 
     public abstract colorDefine() : string;
@@ -39,6 +52,7 @@ export default abstract class Tetris {
     constructor(){
         this._color = this.colorDefine();
         this._shape = Tetris.cut(this.shapeDefine());
+        this._currentShape = this._shape.slice();
         this._cubes = Tetris.generateCubes(this._shape, this._color);
     }
 
@@ -120,6 +134,46 @@ export default abstract class Tetris {
         const cube = this.cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
         return cube!;
     }
+
+    public rotate(){
+
+        const row = this.currHeight;
+        const col = this.currWidth;
+
+        const initArr = [];
+        for(let r=0; r<col; r++){
+            initArr.push(Array(row).fill(ShapeValue.EMPTY));
+        }
+        const newShape = initArr.slice();
+
+        let newRow : number = 0;
+
+        for(let r=0; r < row; r++){
+            newRow = col - 1;
+            for(let c=0; c < col; c++){
+                newShape[newRow][r] = this._currentShape[r][c];
+
+                const cube = this.findCubeByPos({x: c, y: r});
+                cube.pos = {x: r, y: newRow};
+                newRow--;
+            }
+        }
+
+        this._currentShape = newShape.slice();
+    }
+
+    public moveToLeft(){
+        this._cubes.forEach(cube => {
+            cube.mapPos.x--;
+        });
+    }
+
+    public moveToRight(){
+        this._cubes.forEach(cube => {
+            cube.mapPos.x++;
+        });
+    }
+
 
 }
 

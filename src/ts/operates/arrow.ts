@@ -5,9 +5,7 @@ import Looper from "../looper";
 const moveToLeft : KeyboardOperate = {
     handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowLeft"){
-            tetris.cubes.forEach(cube => {
-                cube.mapPos.x--;
-            });
+           tetris.moveToLeft();
         }
     }
 };
@@ -15,9 +13,7 @@ const moveToLeft : KeyboardOperate = {
 const moveToRight : KeyboardOperate = {
     handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowRight"){
-            tetris.cubes.forEach(cube => {
-                cube.mapPos.x++;
-            });
+           tetris.moveToRight();
         }
     }
 };
@@ -26,7 +22,7 @@ const moveToRight : KeyboardOperate = {
 const rotate : KeyboardOperate = {
     handle(event : KeyboardEvent, tetris : Tetris) {
         if(event.key === "ArrowUp"){
-            //逆時針旋轉
+            tetris.rotate();
         }
     }
 };
