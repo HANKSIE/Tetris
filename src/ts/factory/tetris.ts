@@ -1,6 +1,5 @@
 import Tetris from "../widgets/tetris";
 import TetrisType from "../widgets/tetrises/index";
-
 export default class TetrisFactory {
 
     public static create(tetrisType : string) : Tetris{
@@ -13,7 +12,7 @@ export default class TetrisFactory {
         const tetris = TetrisFactory.randomPickTetris();
         const leftX = TetrisFactory.randomLeftPos(tetris, sceneColumn);
 
-        tetris.mapPos = {x: leftX, y: -tetris.height};
+        tetris.pos = {x: leftX, y: 0};
         
         return tetris;
     }

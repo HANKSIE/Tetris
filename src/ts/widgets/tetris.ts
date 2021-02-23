@@ -13,22 +13,18 @@ enum ShapeValue {
 export default abstract class Tetris {
 
     protected _color : string;
+
     protected _originShape :  Shape;
     protected _currentShape :  Shape;
-    protected _cubes : Cube[] = [];
+    protected _prevShape :  Shape;
   
-    protected _mapPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
+    protected _pos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
+    protected _prevPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
+
+    protected _cubes : Cube[] = [];
 
     public get cubes() : Cube[]{
         return this._cubes;
-    }
-
-    public get originShape() : Shape{
-        return this._originShape;
-    }
-
-    public get currentShape() : Shape{
-        return this._currentShape;
     }
 
     public get width() : number{
@@ -39,15 +35,15 @@ export default abstract class Tetris {
         return this._currentShape.length;
     }
 
-    public get mapPos() : Point {
-        return this._mapPos;
+    public get pos() : Point {
+        return this._pos;
     }
 
-    public set mapPos(value : Point) {
-        this._mapPos = value;
-        this._cubes = this.generateCubes(this._currentShape, this._color);
-        console.log(this._cubes);
+    public set pos(value : Point) {
+        this._pos = value;
+        this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
+    
 
     public abstract shapeDefine() : Shape;
 
@@ -56,17 +52,19 @@ export default abstract class Tetris {
     constructor(){
         this._color = this.colorDefine();
         this._originShape = this.shapeDefine();
+        this._prevShape = this._originShape.slice();
         this._currentShape = this._originShape.slice();
     }
 
-    private generateCubes(shape : Shape, color : string) : Cube[]{
+    private generateCubes(pos : Point, shape : Shape, color : string) : Cube[]{
         const cubes : Cube[]= [];
 
-        const { x, y } = this._mapPos;
+        const { x, y } = pos;
+
         shape.forEach((row, r) => {
             row.forEach((element, c) => {
                 if(element === ShapeValue.DEFINED){
-                    cubes.push(CubeFactory.createCube(color, {x: c, y: r}, {x: x + c, y: r + y}));
+                    cubes.push(CubeFactory.create(color, {x: c, y: r}, {x: x + c, y: r + y}));
                 }
             });
         });
@@ -79,8 +77,8 @@ export default abstract class Tetris {
         return cube;
     }
 
-    public findCubeByMapPos(mapPos : Point) : Cube | undefined{
-        const cube = this.cubes.find(cube => cube.mapPos.x === this.mapPos.x && cube.mapPos.y === mapPos.y);
+    public findCubeBypos(pos : Point) : Cube | undefined{
+        const cube = this.cubes.find(cube => cube.pos.x === this.pos.x && cube.pos.y === pos.y);
         return cube;
     }
 
@@ -98,7 +96,6 @@ export default abstract class Tetris {
         const newShape = initArr.slice();
 
         let newRow : number = 0;
-        const newCubes : Cube[]= [];
 
         for(let r=0; r < row; r++){
             newRow = col - 1;
@@ -109,10 +106,9 @@ export default abstract class Tetris {
                 if(val === ShapeValue.DEFINED) {
                     const originCube = this.findCubeByPos({x: c, y: r});
                     if(originCube){
-                        const newCube = CubeFactory.createCube(this._color, {x: r, y: newRow});
+                        const newCube = CubeFactory.create(this._color, {x: r, y: newRow});
                         //tetris左上角之座標 + 偏移量
-                        newCube.mapPos = {x: r + this.mapPos.x,  y: newRow + this.mapPos.y};
-                        newCubes.push(newCube);
+                        newCube.pos = {x: r + this.pos.x,  y: newRow + this.pos.y};
                     }
                 }
 
@@ -121,19 +117,27 @@ export default abstract class Tetris {
         }
 
         this._currentShape = newShape;
-        this._cubes = newCubes;
+        this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
 
     public moveToLeft(){
-        this.mapPos = {x: this.mapPos.x - 1, y: this.mapPos.y};
+        this.pos = {x: this.pos.x - 1, y: this.pos.y};
     }
 
     public moveToRight(){
-        this.mapPos = {x: this.mapPos.x + 1, y: this.mapPos.y};
+        this.pos = {x: this.pos.x + 1, y: this.pos.y};
     }
 
     public down(){
-        this.mapPos = {x: this.mapPos.x, y: this.mapPos.y + 1};
+        this.pos = {x: this.pos.x, y: this.pos.y + 1};
+    }
+
+    public update(){
+        this._prevPos = {x: this.pos.x, y: this.pos.y};
+    }
+
+    public back(){
+        this._pos = {x: this._prevPos.x, y: this._prevPos.y};
     }
 
 }

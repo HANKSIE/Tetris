@@ -43,6 +43,19 @@ export default class Game {
 
     private update(){
         this._currTetris.down();
+        this._currTetris.update();
+    }
+
+    private isCollision(tetris : Tetris){
+        //boundary detect
+        const Boundary = {
+            up: -1,
+            down: this._scene.row,
+            left: -1,
+            right: this._scene.column,
+        };
+
+        //cubes detect
     }
 
     // private operateHandle() {

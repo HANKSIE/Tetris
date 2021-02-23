@@ -86,5 +86,5 @@ export default class Scene {
         this.drawGrid();
         this.drawTetris(tetrises);
     }
-
+    
 }
