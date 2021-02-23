@@ -53,7 +53,7 @@ export default class Game {
 
     private update(){
         this._currTetris.down();
-        this._currTetris.update();
+        this.operateHandle();
     }
 
     private static createBoundaries(scene : Scene) : Point[]{
@@ -70,20 +70,19 @@ export default class Game {
             boundaries.push({x: -1, y: r});
             boundaries.push({x: column, y: r});
         }
-        console.log(boundaries);
+
         return boundaries;
     }
 
     private operateHandle(){
 
-        const points = this._currTetris.points;
+        const points = this._currTetris.nextPoints;
 
         for(let i = 0; i < this._tetrises.length; i++){
             const currTetris = this._tetrises[i];
             if(currTetris !== this._currTetris){
                 for(let j = 0; j < points.length; j++){
                     if (currTetris.findCubeByPos(points[j])){
-                        this._currTetris.back();
                         return;
                     }
                 }
@@ -94,7 +93,7 @@ export default class Game {
             const boundary = this._boundaries[i];
             for(let j = 0; j < points.length; j++){
                 if (points[j].x === boundary.x && points[j].y === boundary.y){
-                    this._currTetris.back();
+                    console.log("collision");
                     return;
                 }
             }

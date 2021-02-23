@@ -16,10 +16,10 @@ export default abstract class Tetris {
 
     protected _originShape :  Shape;
     protected _currentShape :  Shape;
-    protected _prevShape :  Shape;
+    protected _nextShape :  Shape;
   
     protected _pos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
-    protected _prevPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
+    protected _nextPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
 
     protected _cubes : Cube[] = [];
 
@@ -44,6 +44,10 @@ export default abstract class Tetris {
         return this._cubes.map(cube => cube.pos);
     }
 
+    public get nextPoints() : Point[] {
+        return this.generateCubes(this._nextPos, this._nextShape, this._color).map(cube => cube.pos);
+    }
+
     public get color() : string {
         return this._color;
     }
@@ -55,7 +59,7 @@ export default abstract class Tetris {
     constructor(){
         this._color = this.colorDefine();
         this._originShape = this.shapeDefine();
-        this._prevShape = this._originShape.slice();
+        this._nextShape = this._originShape.slice();
         this._currentShape = this._originShape.slice();
     }
 
@@ -114,30 +118,25 @@ export default abstract class Tetris {
             }
         }
 
-        this._currentShape = newShape;
+        this._nextShape = newShape;
         this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
 
     public moveToLeft(){
-        this.pos = {x: this.pos.x - 1, y: this.pos.y};
+        this._nextPos = {x: this.pos.x - 1, y: this.pos.y};
     }
 
     public moveToRight(){
-        this.pos = {x: this.pos.x + 1, y: this.pos.y};
+        this._nextPos = {x: this.pos.x + 1, y: this.pos.y};
     }
 
     public down(){
-        this.pos = {x: this.pos.x, y: this.pos.y + 1};
+        this._nextPos = {x: this.pos.x, y: this.pos.y + 1};
     }
 
     public update(){
-        this._prevPos = {x: this.pos.x, y: this.pos.y};
-    }
-
-    public back(){
-        console.log("back");
-        console.log(this._prevPos);
-        this._pos = {x: this._prevPos.x, y: this._prevPos.y};
+        this._currentShape = this._nextShape.slice();
+        this.pos = {x: this._nextPos.x, y: this._nextPos.y};
     }
 
 }
