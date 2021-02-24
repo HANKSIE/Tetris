@@ -45,8 +45,10 @@ class QuickDown extends KeyboardOperate {
     }
     public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
         if(event.key === "ArrowDown"){
-            mainLooper.ms = mainLooper.ms - speed;
-            isPressDown = false;
+            if(!isPressDown){
+                mainLooper.ms = mainLooper.ms - speed;
+                isPressDown = true;
+            }
         }
     }
 }

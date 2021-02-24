@@ -93,10 +93,15 @@ export default class Game {
         if(!isCollisionBoundary && !isCollisionTetris){
             this._currTetris.update();
         }else{
+           
+            if(operate.action() === Action.Down){
+                this._currTetris = TetrisFactory.createRandom(this._scene.column);
+                this._tetrises.push(this._currTetris);
+            }else{
+                console.log("collision");
+            }
             this._currTetris.back();
         }
-
-        console.log("collision");
 
     }
 
