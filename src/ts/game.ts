@@ -92,7 +92,8 @@ export default class Game {
        
         if(!isCollisionBoundary && !isCollisionTetris){
             this._currTetris.update();
-            return;
+        }else{
+            this._currTetris.back();
         }
 
         console.log("collision");

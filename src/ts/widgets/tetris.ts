@@ -138,5 +138,10 @@ export default abstract class Tetris {
         this.pos = {x: this._nextPos.x, y: this._nextPos.y};
     }
 
+    public back(){
+        this._nextShape = this._currentShape.slice();
+        this._nextPos = {x: this.pos.x, y: this.pos.y};
+    }
+
 }
 
