@@ -119,7 +119,6 @@ export default abstract class Tetris {
         }
 
         this._nextShape = newShape;
-        this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
 
     public moveToLeft(){

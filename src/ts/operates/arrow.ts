@@ -1,59 +1,72 @@
-import KeyboardOperate from "../utilize/keyboard";
+import { KeyboardOperate } from "../utilize/operate";
 import Tetris from "../widgets/tetris";
 import Looper from "../looper";
 import Action from "../utilize/action";
 
-const moveToLeft : KeyboardOperate = {
-    action : Action.Left,
-    handle(event : KeyboardEvent, tetris : Tetris) {
-        if(event.key === "ArrowLeft"){
-           tetris.moveToLeft();
-        }
+class Left extends KeyboardOperate {
+    public action(): String | Action {
+        return Action.Left;
     }
-};
-
-const moveToRight : KeyboardOperate = {
-    action : Action.Right,
-    handle(event : KeyboardEvent, tetris : Tetris) {
-        if(event.key === "ArrowRight"){
-           tetris.moveToRight();
-        }
+    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+        if(event?.key === "ArrowLeft"){
+            tetris?.moveToLeft();
+         }
     }
-};
+}
 
+class Right extends KeyboardOperate {
+    public action(): String | Action {
+        return Action.Right;
+    }
+    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+        if(event?.key === "ArrowRight"){
+            tetris?.moveToRight();
+         }
+    }
+}
+class Rotate extends KeyboardOperate {
 
-const rotate : KeyboardOperate = {
-    action : Action.Rotate,
-    handle(event : KeyboardEvent, tetris : Tetris) {
+    public action(): String | Action {
+        return Action.Rotate;
+    }
+    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
         if(event.key === "ArrowUp"){
             tetris.rotate();
         }
     }
-};
+}
 
 let isPressDown = false;
 const speed = 400;
+class QuickDown extends KeyboardOperate {
 
-const quickDown : KeyboardOperate = {
-    action : "quickDown",
-    handle(event : KeyboardEvent, tetris : Tetris, downLooper : Looper) {
-        if(event.key === "ArrowDown"){
-            if(!isPressDown){
-                downLooper.ms = downLooper.ms - speed;
-                isPressDown = true;
-            }
-        }
+    public action(): String | Action {
+        return "quickDown";
     }
-};
-
-const normalDown : KeyboardOperate = {
-    action : "normalDown",
-    handle(event : KeyboardEvent, tetris : Tetris, downLooper : Looper) {
+    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
         if(event.key === "ArrowDown"){
-            downLooper.ms = downLooper.ms + speed;
+            mainLooper.ms = mainLooper.ms - speed;
             isPressDown = false;
         }
     }
-};
+}
+class RestoreDown extends KeyboardOperate {
 
-export { moveToLeft, moveToRight, rotate, quickDown, normalDown};
+    public action(): String | Action {
+        return "restore";
+    }
+    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+        if(event?.key === "ArrowDown"){
+            mainLooper.ms = mainLooper.ms + speed;
+            isPressDown = false;
+        }
+    }
+}
+
+const moveToLeft = new Left();
+const moveToRight = new Right();
+const rotate = new Rotate();
+const quickDown = new QuickDown();
+const restoreDown = new RestoreDown();
+
+export { moveToLeft, moveToRight, rotate, quickDown, restoreDown,};

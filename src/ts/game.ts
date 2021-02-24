@@ -1,7 +1,7 @@
 import Scene from "./widgets/scene";
 import Tetris from "./widgets/tetris";
 import Looper from "./looper";
-import KeyboardOperate from "./utilize/keyboard";
+import { KeyboardOperate, Operate, PermanentOperate} from "./utilize/operate";
 import TetrisFactory from "./factory/tetris";
 import { Point } from "./utilize/coordinate";
 import Action from "./utilize/action";
@@ -19,17 +19,22 @@ export default class Game {
 
     private _keydownEvents : KeyboardOperate[] = [];
     private _keyupEvents : KeyboardOperate[] = [];
+    private _permanentEvents : PermanentOperate[] = [];
 
-    constructor(scene : Scene,  keydownEvents : KeyboardOperate[] = [], keyupEvents: KeyboardOperate[] = []){
+    constructor(scene : Scene,  keydownEvents : KeyboardOperate[], keyupEvents: KeyboardOperate[], permanentEvents : PermanentOperate[]){
         this._scene = scene;
+
         this._currTetris = TetrisFactory.createRandom(this._scene.column);
         this._tetrises.push(this._currTetris);
+
         this._downLooper = new Looper(() => {
             this.update();
         }, 450);
         this._drawLooper = new Looper(() => {this._scene.draw(this._tetrises);}, 50);
+
         this._keydownEvents = keydownEvents;
         this._keyupEvents = keyupEvents;
+        this._permanentEvents = permanentEvents;
 
         this._boundaries = Game.createBoundaries(this._scene);
         
@@ -54,12 +59,9 @@ export default class Game {
     }
 
     private update(){
-        this._currTetris.down();
-        this.operateHandle({
-            action : Action.Down,
-            handle(event : KeyboardEvent, tetris : Tetris) {
-                tetris.down();
-            }
+        this._permanentEvents.forEach( operate => {
+            operate.handle(this._currTetris);
+            this.operateHandle(operate);
         });
     }
 
@@ -81,7 +83,7 @@ export default class Game {
         return boundaries;
     }
 
-    private operateHandle(operate : KeyboardOperate){
+    private operateHandle(operate : Operate){
 
         const points = this._currTetris.nextPoints;
 
