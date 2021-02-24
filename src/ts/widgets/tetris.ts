@@ -100,10 +100,10 @@ export default abstract class Tetris {
         let newRow : number = 0;
 
         for(let r=0; r < row; r++){
-            newRow = col - 1;
-            for(let c=0; c < col; c++){
-                const val = this._currentShape[r][c]
-                newShape[newRow][r] = val;
+            newRow = 0;
+            for(let c= 0; c < col; c++){
+                const val = this._currentShape[r][c];
+                newShape[newRow][row - r - 1] = val;
 
                 if(val === ShapeValue.DEFINED) {
                     const originCube = this.findCubeByPos({x: c, y: r});
@@ -113,8 +113,7 @@ export default abstract class Tetris {
                         newCube.pos = {x: r + this.pos.x,  y: newRow + this.pos.y};
                     }
                 }
-
-                newRow--;
+                newRow++;
             }
         }
 
