@@ -65,7 +65,7 @@ export default class Game {
 
     private update(){
         this._permanentEvents.forEach( operate => {
-            operate.handle(this._currTetris);
+            operate.handle(this._tetrises);
             this.operateHandle(operate);
         });
     }

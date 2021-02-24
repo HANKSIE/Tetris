@@ -7,7 +7,7 @@ abstract class Operate {
 }
 
 abstract class PermanentOperate extends Operate {
-    public abstract handle(tetris : Tetris) : void;
+    public abstract handle(tetrises : Tetris[]) : void;
 }
 
 abstract class KeyboardOperate extends Operate {

@@ -7,8 +7,10 @@ class DefaultDown extends PermanentOperate {
     public action(): String | Action {
         return Action.Down;
     }
-    public handle(tetris: Tetris): void {
-        tetris.down();
+    public handle(tetrises: Tetris[]): void {
+        tetrises.forEach(tetris => {
+            tetris.down();
+        });
     }
 
 }
