@@ -1,4 +1,4 @@
-import { Point } from "../interfaces/coordinate";
+import { Point } from "../utilize/coordinate";
 
 export default class Cube {
 

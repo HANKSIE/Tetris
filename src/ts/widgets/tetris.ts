@@ -1,6 +1,6 @@
 import Cube from "./cube";
 import CubeFactory from "../factory/cube";
-import { Point } from "../interfaces/coordinate";
+import { Point } from "../utilize/coordinate";
 
 type Shape = Array<Array<number>>;
 
