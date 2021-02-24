@@ -12,6 +12,9 @@ export default class Game {
     private _downLooper : Looper;
     private _drawLooper : Looper;
 
+    private _downInterval : number = 450;
+    private _drawInterval = 50;
+
     private _currTetris : Tetris;
     private _tetrises : Tetris[] = [];
 
@@ -29,8 +32,8 @@ export default class Game {
 
         this._downLooper = new Looper(() => {
             this.update();
-        }, 450);
-        this._drawLooper = new Looper(() => {this._scene.draw(this._tetrises);}, 50);
+        }, this._downInterval);
+        this._drawLooper = new Looper(() => {this._scene.draw(this._tetrises);}, this._drawInterval);
 
         this._keydownEvents = keydownEvents;
         this._keyupEvents = keyupEvents;
@@ -97,6 +100,7 @@ export default class Game {
             if(operate.action() === Action.Down){
                 this._currTetris = TetrisFactory.createRandom(this._scene.column);
                 this._tetrises.push(this._currTetris);
+                this.restoreDownLooperMs();
             }else{
                 console.log("collision");
             }
@@ -134,6 +138,9 @@ export default class Game {
         return false;
     }
 
+    private restoreDownLooperMs() {
+        this._downLooper.ms = this._downInterval;
+    }
 
     public start(){
         this._downLooper.start();

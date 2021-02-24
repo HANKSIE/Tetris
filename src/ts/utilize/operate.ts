@@ -11,7 +11,7 @@ abstract class PermanentOperate extends Operate {
 }
 
 abstract class KeyboardOperate extends Operate {
-    public abstract handle(event : KeyboardEvent, tetris : Tetris, mainLooper : Looper) : void;
+    public abstract handle(event : KeyboardEvent, tetris : Tetris, downLooper : Looper) : void;
 }
 
 export { Operate, PermanentOperate, KeyboardOperate };

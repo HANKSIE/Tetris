@@ -7,7 +7,7 @@ class Left extends KeyboardOperate {
     public action(): String | Action {
         return Action.Left;
     }
-    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event?.key === "ArrowLeft"){
             tetris?.moveToLeft();
          }
@@ -18,7 +18,7 @@ class Right extends KeyboardOperate {
     public action(): String | Action {
         return Action.Right;
     }
-    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event?.key === "ArrowRight"){
             tetris?.moveToRight();
          }
@@ -29,7 +29,7 @@ class Rotate extends KeyboardOperate {
     public action(): String | Action {
         return Action.Rotate;
     }
-    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event.key === "ArrowUp"){
             tetris.rotate();
         }
@@ -43,10 +43,10 @@ class QuickDown extends KeyboardOperate {
     public action(): String | Action {
         return "quickDown";
     }
-    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event.key === "ArrowDown"){
             if(!isPressDown){
-                mainLooper.ms = mainLooper.ms - speed;
+                downLooper.ms = downLooper.ms - speed;
                 isPressDown = true;
             }
         }
@@ -55,14 +55,30 @@ class QuickDown extends KeyboardOperate {
 class RestoreDown extends KeyboardOperate {
 
     public action(): String | Action {
-        return "restore";
+        return "restoreDown";
     }
-    public handle(event: KeyboardEvent, tetris: Tetris, mainLooper: Looper): void {
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event?.key === "ArrowDown"){
-            mainLooper.ms = mainLooper.ms + speed;
+            downLooper.ms = downLooper.ms + speed;
             isPressDown = false;
         }
     }
+}
+
+
+class EagerDown extends KeyboardOperate {
+
+    public action(): String | Action {
+        return "eagerDown";
+    }
+    public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
+        if(event?.key === " "){
+            // const originMs = downLooper.ms;
+            downLooper.ms = 0;
+            // downLooper.ms = originMs;
+        }
+    }
+
 }
 
 const moveToLeft = new Left();
@@ -70,5 +86,6 @@ const moveToRight = new Right();
 const rotate = new Rotate();
 const quickDown = new QuickDown();
 const restoreDown = new RestoreDown();
+const eagerDown = new EagerDown();
 
-export { moveToLeft, moveToRight, rotate, quickDown, restoreDown,};
+export { moveToLeft, moveToRight, rotate, quickDown, restoreDown, eagerDown};
