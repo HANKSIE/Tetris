@@ -10,9 +10,10 @@ export default class TetrisFactory {
 
     public static createRandom(sceneColumn: number) : Tetris {
         const tetris = TetrisFactory.randomPickTetris();
-        const leftX = TetrisFactory.randomLeftPos(tetris, sceneColumn);
 
-        tetris.pos = {x: leftX, y: 0};
+        const x = Math.floor(sceneColumn / 2 - tetris.width / 2);
+
+        tetris.pos = {x, y: 0};
         
         return tetris;
     }
@@ -24,16 +25,4 @@ export default class TetrisFactory {
         return TetrisFactory.create(pick);
     }
 
-    /**
-     * 生成由Tetris最左方繪製Tetris的隨機點x
-     * 
-     * @param tetris
-     * 
-     * @returns {number}
-     */
-    private static randomLeftPos(tetris : Tetris, sceneColumn: number) : number  {
-        const length : number  = sceneColumn - tetris.width;
-        const randomX : number  = Math.floor(Math.random() * (length + 1));
-        return randomX;
-    }
 }

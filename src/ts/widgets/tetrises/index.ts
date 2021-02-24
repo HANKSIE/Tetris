@@ -52,7 +52,7 @@ class LTetris extends Tetris {
 class OTetris extends Tetris {
 
     public colorDefine() : string {
-        return "#fadb14";
+        return "#fff242";
     }
 
     public shapeDefine(): number[][] {
@@ -67,7 +67,7 @@ class OTetris extends Tetris {
 class STetris extends Tetris {
 
     public colorDefine() : string {
-        return "#c1ff70";
+        return "#00de3f";
     }
 
     public shapeDefine(): number[][] {
@@ -83,7 +83,7 @@ class STetris extends Tetris {
 class TTetris extends Tetris {
 
     public colorDefine() : string {
-        return "#c859f7";
+        return "#e557f7";
     }
 
     public shapeDefine(): number[][] {

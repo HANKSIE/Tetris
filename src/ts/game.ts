@@ -33,7 +33,9 @@ export default class Game {
         this._downLooper = new Looper(() => {
             this.update();
         }, this._downInterval);
-        this._drawLooper = new Looper(() => {this._scene.draw(this._tetrises);}, this._drawInterval);
+        this._drawLooper = new Looper(() => {;
+            this._scene.draw(this._tetrises);
+        }, this._drawInterval);
 
         this._keydownEvents = keydownEvents;
         this._keyupEvents = keyupEvents;
@@ -96,11 +98,18 @@ export default class Game {
         if(!isCollisionBoundary && !isCollisionTetris){
             this._currTetris.update();
         }else{
-           
             if(operate.action() === Action.Down){
                 this._currTetris = TetrisFactory.createRandom(this._scene.column);
                 this._tetrises.push(this._currTetris);
-                this.restoreDownLooperMs();
+
+                if(this.isCollisionTetris(this._currTetris.points)){
+                    console.log("gameover");
+                    this.stop();
+                    return;
+                }else {
+                    this.restoreDownLooperMs();
+                }
+
             }else{
                 console.log("collision");
             }

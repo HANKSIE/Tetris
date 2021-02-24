@@ -73,9 +73,7 @@ class EagerDown extends KeyboardOperate {
     }
     public handle(event: KeyboardEvent, tetris: Tetris, downLooper: Looper): void {
         if(event?.key === " "){
-            // const originMs = downLooper.ms;
             downLooper.ms = 0;
-            // downLooper.ms = originMs;
         }
     }
 
