@@ -40,12 +40,12 @@ export default abstract class Tetris {
         this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
     }
     
-    public get points() : Point[] {
-        return this._cubes.map(cube => cube.pos);
+    public get cubes() : Cube[] {
+        return this._cubes;
     }
 
-    public get nextPoints() : Point[] {
-        return this.generateCubes(this._nextPos, this._nextShape, this._color).map(cube => cube.pos);
+    public get nextCubes() : Cube[] {
+        return this.generateCubes(this._nextPos, this._nextShape, this._color);
     }
 
     public get color() : string {
@@ -82,6 +82,10 @@ export default abstract class Tetris {
     public findCubeByPos(pos : Point) : Cube | undefined{
         const cube = this._cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
         return cube;
+    }
+
+    public findCube(cube : Cube) : Cube | undefined{
+        return this._cubes.find(el => el === cube);
     }
 
     public rotate(){

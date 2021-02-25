@@ -1,10 +1,11 @@
 import Scene from "./widgets/scene";
 import Tetris from "./widgets/tetris";
 import Looper from "./looper";
-import { KeyboardOperate, Operate, PermanentOperate} from "./utilize/operate";
+import { KeyboardOperate } from "./utilize/operate";
 import TetrisFactory from "./factory/tetris";
 import { Point } from "./utilize/coordinate";
-import Action from "./utilize/action";
+import Cube from "./widgets/cube";
+
 export default class Game {
 
     private _scene : Scene;
@@ -20,11 +21,60 @@ export default class Game {
 
     private _boundaries : Point[] = [];
 
-    private _keydownEvents : KeyboardOperate[] = [];
-    private _keyupEvents : KeyboardOperate[] = [];
-    private _permanentEvents : PermanentOperate[] = [];
+    private _softDown = false;
+    private _speedIncrease = 400;
+    private _isDown = false;
 
-    constructor(scene : Scene,  keydownEvents : KeyboardOperate[], keyupEvents: KeyboardOperate[], permanentEvents : PermanentOperate[]){
+    private moveLeft : KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "ArrowLeft"){
+            this._currTetris.moveToLeft();
+        }
+    }
+    
+    private moveRight : KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "ArrowRight"){
+            this._currTetris.moveToRight();
+        }
+    }
+    
+    private rotate : KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "ArrowUp"){
+            this._currTetris.rotate();
+        }
+    }
+    
+    private softDrop : KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "ArrowDown"){
+            if(!this._softDown){
+                this._downLooper.ms = this._downLooper.ms - this._speedIncrease;
+                this._softDown = true;
+            }
+        }
+    }
+    
+    private restoreSoftDrop: KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "ArrowDown"){
+            if(this._softDown){
+                this._downLooper.ms = this._downLooper.ms + this._speedIncrease;
+                this._softDown = false;
+            }
+        }
+    }
+    
+    private hardDrop : KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === " "){
+            this._downLooper.ms = 0;
+        }
+    }
+
+    private down() {
+        this._tetrises.forEach(tetris => {
+            tetris.down();
+        });
+        this._isDown = true;
+    }
+
+    constructor(scene : Scene){
         this._scene = scene;
 
         this._currTetris = TetrisFactory.createRandom(this._scene.column);
@@ -37,9 +87,6 @@ export default class Game {
             this._scene.draw(this._tetrises);
         }, this._drawInterval);
 
-        this._keydownEvents = keydownEvents;
-        this._keyupEvents = keyupEvents;
-        this._permanentEvents = permanentEvents;
 
         this._boundaries = Game.createBoundaries(this._scene);
         
@@ -49,25 +96,25 @@ export default class Game {
     private registerKeyBoardEvent(){
 
         document.addEventListener("keydown", (event : KeyboardEvent) => {
-            this._keydownEvents.forEach( operate => {
-                operate.handle(event, this._currTetris, this._downLooper);
-                this.operateHandle(operate);
-            });
+            this.moveLeft(event);
+            this.moveRight(event);
+            this.rotate(event);
+            this.softDrop(event);
+            this.hardDrop(event);
+
+            this.operateHandle();
         });
 
         document.addEventListener("keyup", (event : KeyboardEvent) => {
-            this._keyupEvents.forEach( operate => {
-                operate.handle(event, this._currTetris, this._downLooper);
-                this.operateHandle(operate);
-            });
+            this.restoreSoftDrop(event);
+            this.operateHandle();
         });
     }
 
     private update(){
-        this._permanentEvents.forEach( operate => {
-            operate.handle(this._tetrises);
-            this.operateHandle(operate);
-        });
+        this.down();
+        this.operateHandle();
+        this._isDown = false;
     }
 
     private static createBoundaries(scene : Scene) : Point[]{
@@ -88,21 +135,23 @@ export default class Game {
         return boundaries;
     }
 
-    private operateHandle(operate : Operate){
+    private operateHandle(){
 
-        const points = this._currTetris.nextPoints;
+        const cubes = this._currTetris.nextCubes;
 
-        const isCollisionTetris = this.isCollisionTetris(points);
-        const isCollisionBoundary = this.isCollisionBoundary(points);
+        const isCollisionTetris = this.isCollisionTetris(cubes);
+        const isCollisionBoundary = this.isCollisionBoundary(cubes);
        
         if(!isCollisionBoundary && !isCollisionTetris){
             this._currTetris.update();
         }else{
-            if(operate.action() === Action.Down){
+            // collision
+            if(this._isDown){
                 this._currTetris = TetrisFactory.createRandom(this._scene.column);
                 this._tetrises.push(this._currTetris);
+                this._softDown = false;
 
-                if(this.isCollisionTetris(this._currTetris.points)){
+                if(this.isCollisionTetris(this._currTetris.cubes)){
                     console.log("gameover");
                     this.stop();
                     return;
@@ -110,21 +159,20 @@ export default class Game {
                     this.restoreDownLooperMs();
                 }
 
-            }else{
-                console.log("collision");
             }
+
             this._currTetris.back();
         }
 
     }
 
-    private isCollisionTetris(points : Point[]) : boolean {
+    private isCollisionTetris(cubes : Cube[]) : boolean {
 
         for(let i = 0; i < this._tetrises.length; i++){
             const currTetris = this._tetrises[i];
             if(currTetris !== this._currTetris){
-                for(let j = 0; j < points.length; j++){
-                    if (currTetris.findCubeByPos(points[j])){
+                for(let j = 0; j < cubes.length; j++){
+                    if (currTetris.findCubeByPos(cubes[j].pos)){
                         return true;
                     }
                 }
@@ -134,11 +182,12 @@ export default class Game {
         return false
     }
 
-    private isCollisionBoundary(points : Point[]) : boolean {
+    private isCollisionBoundary(cubes : Cube[]) : boolean {
         for(let i = 0; i < this._boundaries.length; i++){
             const boundary = this._boundaries[i];
-            for(let j = 0; j < points.length; j++){
-                if (points[j].x === boundary.x && points[j].y === boundary.y){
+            for(let j = 0; j < cubes.length; j++){
+                const points = cubes[j].pos;
+                if (points.x === boundary.x && points.y === boundary.y){
                     return true;
                 }
             }

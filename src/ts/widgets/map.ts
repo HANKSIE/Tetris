@@ -1,13 +1,14 @@
 import Tetris from "../widgets/tetris";
 import { Point } from "../utilize/coordinate";
+import Cube from "./cube";
 
 interface SavePoint {
     tetris: Tetris,
-    pos: Point,
+    cube: Cube | undefined,
 }
 
 class SceneMap {
-    private _map : SavePoint[][];
+    private _map : Tetris[][];
     public _width : number;
     public _height : number;
     public get width() : number {
@@ -32,20 +33,20 @@ class SceneMap {
 
     public add(tetris : Tetris) {
         //記錄點對應到的位置
-        tetris.points.forEach(point => {
-            const { x, y } = point;
-            this._map[y][x] = {tetris, pos: {x, y}};
+        tetris.cubes.forEach((cube) => {
+            const {x, y} = cube.pos;
+            this._map[y][x] = tetris;
         });
     }
 
     public eraseSavePoint()  {
         const result : SavePoint[] = [];
 
-        this._map.forEach(row => {
+        this._map.forEach((row, r) => {
             //該列元素皆不為null
-            if(row.every(el =>  !!el)) {
-                row.forEach(el => {
-                    result.push(el);
+            if(row.every(tetris =>  !!tetris)) {
+                row.forEach((tetris, c) => {
+                    result.push({tetris, cube: tetris.findCubeByPos({x: c, y:r})});
                 });
             }
         });

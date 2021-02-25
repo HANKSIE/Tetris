@@ -5,6 +5,7 @@ export default class Cube {
     private _color : string;
     private _relationPos : Point;
     private _pos : Point;
+    public isErase: boolean = false;
 
     public get color(){
         return this._color;

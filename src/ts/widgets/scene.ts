@@ -68,7 +68,8 @@ export default class Scene {
     public drawTetris(tetrises : Tetris[]){
         this._ctx.strokeStyle = "#555555";
         tetrises.forEach(tetris => {
-            tetris.points.forEach(p => {
+            tetris.cubes.forEach(cube => {
+                const p = cube.pos;
                 this._ctx.beginPath();
                 const x = p.x * this.unit;
                 const y = p.y * this.unit;
