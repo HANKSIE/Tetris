@@ -1,6 +1,6 @@
 export default class Looper {
 
-    private _timerID : number = 0;
+    private _timerID : number | null = null;
     private _ms : number;
 
     public get ms() {
@@ -9,7 +9,7 @@ export default class Looper {
 
     public set ms(val : number) {
         this._ms = val;
-        this.destroy();
+        this.stop();
         this.start();
     }
 
@@ -21,15 +21,16 @@ export default class Looper {
     }
 
     public start() {
-        this._timerID = setInterval(this.updateHandle, this._ms);
+        if(!this._timerID){
+            this._timerID = setInterval(this.updateHandle, this._ms);
+        }
     }
 
     public stop() {
-        this.destroy();
-    }
-
-    private destroy() {
-        clearInterval(this._timerID);
+        if(this._timerID){
+            clearInterval(this._timerID);
+            this._timerID = null;
+        }
     }
 
 }

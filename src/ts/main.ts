@@ -9,7 +9,7 @@ const hold = document.querySelector("#hold") as HTMLCanvasElement;
 
 const start = document.querySelector("#start") as HTMLCanvasElement;
 const stop = document.querySelector("#stop") as HTMLCanvasElement;
-const restart = document.querySelector("#restart") as HTMLCanvasElement;
+const reset = document.querySelector("#reset") as HTMLCanvasElement;
 
 const scene : Scene = new Scene(canvas, {row: 24, column: 14, unit: 20}, [one, two, three], hold);
 
@@ -17,10 +17,9 @@ let game : Game = new Game(scene);
 
 start.addEventListener("click", ()=>{game.start()});
 stop.addEventListener("click", ()=>{game.stop()});
-restart.addEventListener("click", ()=>{
+reset.addEventListener("click", ()=>{
     game.stop();
     scene.clearAllCanvases();
     scene.drawGrid();
     game = new Game(scene);
-    game.start();
 });

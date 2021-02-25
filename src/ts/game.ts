@@ -28,6 +28,8 @@ export default class Game {
     private _isDown = false;
     private _canHold = true; 
 
+    private _start = false;
+
     private moveLeft : KeyboardOperate = (event: KeyboardEvent) => {
         if(event.key === "ArrowLeft"){
             this._currTetris.moveToLeft();
@@ -102,10 +104,6 @@ export default class Game {
 
         this._currTetris = TetrisFactory.createRandom(this._scene.column);
         this._tetrises.push(this._currTetris);
-        for(let i=0; i<3; i++){
-            this._prepareTetrises.push(TetrisFactory.createRandom(this._scene.column));
-        }
-        this._scene.drawPrepare(this._prepareTetrises);
 
         this._downLooper = new Looper(() => {
             this.update();
@@ -123,13 +121,16 @@ export default class Game {
     private registerKeyBoardEvent(){
 
         document.addEventListener("keydown", (event : KeyboardEvent) => {
-            this.moveLeft(event);
-            this.moveRight(event);
-            this.rotate(event);
-            this.softDrop(event);
-            this.hardDrop(event);
-            this.hold(event);
-
+            
+            if(this._start){
+                this.moveLeft(event);
+                this.moveRight(event);
+                this.rotate(event);
+                this.softDrop(event);
+                this.hardDrop(event);
+                this.hold(event);
+            }
+          
             this.operateHandle();
         });
 
@@ -237,11 +238,21 @@ export default class Game {
     public start(){
         this._downLooper.start();
         this._drawLooper.start();
+        
+        if(this._prepareTetrises.length === 0){
+            for(let i=0; i<3; i++){
+                this._prepareTetrises.push(TetrisFactory.createRandom(this._scene.column));
+            }
+            this._scene.drawPrepare(this._prepareTetrises);
+        }
+      
+        this._start = true;
     }
 
     public stop(){
         this._downLooper.stop();
         this._drawLooper.stop();
+        this._start = false;
     }
 
     private erase(){
