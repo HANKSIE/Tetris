@@ -268,8 +268,6 @@ export default class Game {
     }
 
     private downCubes(eraseY : number[]) {
-        console.log(eraseY);
-        console.log(this._tetrises);
         this._tetrises.forEach(tetris => {
             tetris.cubes.forEach(cube => {
                 //下降量
