@@ -13,7 +13,7 @@ export default class TetrisFactory {
 
         const x = Math.floor(sceneColumn / 2 - tetris.width / 2);
 
-        tetris.pos = {x, y: 0};
+        tetris.originPos = {x, y: 0};
         
         return tetris;
     }

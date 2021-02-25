@@ -18,6 +18,7 @@ export default abstract class Tetris {
     protected _currentShape :  Shape;
     protected _nextShape :  Shape;
   
+    protected _originPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
     protected _pos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
     protected _nextPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
 
@@ -38,6 +39,22 @@ export default abstract class Tetris {
     public set pos(value : Point) {
         this._pos = value;
         this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
+    }
+
+    public get originPos() : Point {
+        return this._originPos;
+    }
+
+    public set originPos(value: Point) {
+
+        if(this.originPos.x === Number.MIN_SAFE_INTEGER && this.originPos.y === Number.MIN_SAFE_INTEGER){
+            const {x, y} = value;
+
+            this._originPos = {x, y};  
+            this.pos = {x, y};  
+            this._nextPos = {x, y};  
+        }
+
     }
     
     public get cubes() : Cube[] {
@@ -146,6 +163,12 @@ export default abstract class Tetris {
     public back(){
         this._nextShape = this._currentShape.slice();
         this._nextPos = {x: this.pos.x, y: this.pos.y};
+    }
+
+    public posInitialize (){
+        const {x, y} = this.originPos;
+        this.pos = {x, y};
+        this._nextPos = {x, y};
     }
 }
 

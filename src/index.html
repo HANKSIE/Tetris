@@ -14,23 +14,65 @@
 
         html, body {
             height: 100%;
+            overflow: hidden;
         }
         
         #scene {
-            background-color: #AAAAAA;
+            background-color: #444444;
         }
 
-        .center {
+        #game {
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100%;
+        }
+
+        #prepare {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #444444;
+            height: 50%;
+            width: 100px;
+        }
+
+        #hold-area {
+            display: flex;
+            flex-direction: column;
+            background-color: #444444;
+            height: 50%;
+            width: 100px;
+        }
+
+        #one, #two, #three {
+            margin: 10px 0;
+        }
+
+        .title {
+            color: white;
+            font-weight: bold;
         }
         
     </style>
 </head>
 <body>
-    <div class="center" style="min-height: 100%;">
+    <div id="game">
+        <div id="hold-area">
+            <h2 class="title" >Hold</h2>
+            <canvas id="hold" width="80" height="80"></canvas>
+            <button id="start">start</button>
+            <button id="stop">stop</button>
+            <button id="restart">restart</button>
+        </div>
         <canvas id="scene"></canvas>
+        <div id="prepare">
+            <h2 class="title" >Next</h2>
+            <canvas id="one"></canvas>
+            <canvas id="two"></canvas>
+            <canvas id="three"></canvas>
+        </div>
     </div>
 </body>
 </html>

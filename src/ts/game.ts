@@ -18,12 +18,15 @@ export default class Game {
 
     private _currTetris : Tetris;
     private _tetrises : Tetris[] = [];
+    private _prepareTetrises : Tetris[] = [];
+    private _holdTetris : Tetris | null = null;
 
     private _boundaries : Point[] = [];
 
     private _softDown = false;
     private _speedIncrease = 400;
     private _isDown = false;
+    private _canHold = true; 
 
     private moveLeft : KeyboardOperate = (event: KeyboardEvent) => {
         if(event.key === "ArrowLeft"){
@@ -40,6 +43,28 @@ export default class Game {
     private rotate : KeyboardOperate = (event: KeyboardEvent) => {
         if(event.key === "ArrowUp"){
             this._currTetris.rotate();
+        }
+    }
+
+    private hold: KeyboardOperate = (event: KeyboardEvent) => {
+        if(event.key === "c" && this._canHold){
+            this._canHold = false;
+            if(this._holdTetris){
+                const tempCurr = this._currTetris;
+                this._currTetris = this._holdTetris;
+                this._currTetris.posInitialize();
+                this._holdTetris = tempCurr;
+                this._tetrises = this._tetrises.filter(tetris => tetris !== this._holdTetris);
+                this._tetrises.push(this._currTetris);
+            }else{
+                this._holdTetris = this._currTetris;
+                this.updateCurrAndPrepare();
+                this._tetrises = this._tetrises.filter(tetris => tetris !== this._holdTetris);
+                this._currTetris.posInitialize();
+                this._holdTetris.posInitialize();
+            }
+
+            this._scene.drawHold(this._holdTetris);
         }
     }
     
@@ -77,6 +102,10 @@ export default class Game {
 
         this._currTetris = TetrisFactory.createRandom(this._scene.column);
         this._tetrises.push(this._currTetris);
+        for(let i=0; i<3; i++){
+            this._prepareTetrises.push(TetrisFactory.createRandom(this._scene.column));
+        }
+        this._scene.drawPrepare(this._prepareTetrises);
 
         this._downLooper = new Looper(() => {
             this.update();
@@ -99,6 +128,7 @@ export default class Game {
             this.rotate(event);
             this.softDrop(event);
             this.hardDrop(event);
+            this.hold(event);
 
             this.operateHandle();
         });
@@ -151,13 +181,14 @@ export default class Game {
             //消除方塊
             this.erase();
             //產生新方塊
-            this._currTetris = TetrisFactory.createRandom(this._scene.column);
-            this._tetrises.push(this._currTetris);
+            this.updateCurrAndPrepare();
+
             this._softDown = false;
+            this._canHold = true;
 
             if(this.isCollisionTetris(this._currTetris.cubes, true)){
-                console.log("gameover");
                 this.stop();
+                alert("gameover");
                 return;
             }else {
                 this.restoreDownLooperMs();
@@ -221,6 +252,13 @@ export default class Game {
         this._downLooper.start();
     }
 
+    private updateCurrAndPrepare(){
+        this._currTetris = this._prepareTetrises.shift() as Tetris;
+        this._tetrises.push(this._currTetris);
+        this._prepareTetrises.push(TetrisFactory.createRandom(this._scene.column));
+        this._scene.drawPrepare(this._prepareTetrises);
+        
+    }
     //回傳這次應erase的y座標
     private eraseCubes() : number[]{
 
@@ -275,7 +313,6 @@ export default class Game {
                 cube.pos = {x: cube.pos.x, y: cube.pos.y + down};
             });
         });
-       
     }
 
 }
