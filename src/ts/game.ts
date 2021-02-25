@@ -68,9 +68,7 @@ export default class Game {
     }
 
     private down() {
-        this._tetrises.forEach(tetris => {
-            tetris.down();
-        });
+        this._currTetris.down();
         this._isDown = true;
     }
 
@@ -139,43 +137,48 @@ export default class Game {
 
         const cubes = this._currTetris.nextCubes;
 
-        const isCollisionTetris = this.isCollisionTetris(cubes);
+        const isCollisionTetris = this.isCollisionTetris(cubes, true);
         const isCollisionBoundary = this.isCollisionBoundary(cubes);
        
         if(!isCollisionBoundary && !isCollisionTetris){
             this._currTetris.update();
-        }else{
-            // collision
-            if(this._isDown){
-                this._currTetris = TetrisFactory.createRandom(this._scene.column);
-                this._tetrises.push(this._currTetris);
-                this._softDown = false;
+            return;
+        }
 
-                if(this.isCollisionTetris(this._currTetris.cubes)){
-                    console.log("gameover");
-                    this.stop();
-                    return;
-                }else {
-                    this.restoreDownLooperMs();
-                }
+        //collision
+        if(this._isDown){
 
+            //消除方塊
+            this.erase();
+            //產生新方塊
+            this._currTetris = TetrisFactory.createRandom(this._scene.column);
+            this._tetrises.push(this._currTetris);
+            this._softDown = false;
+
+            if(this.isCollisionTetris(this._currTetris.cubes, true)){
+                console.log("gameover");
+                this.stop();
+                return;
+            }else {
+                this.restoreDownLooperMs();
             }
 
-            this._currTetris.back();
         }
+
+        this._currTetris.back();
 
     }
 
-    private isCollisionTetris(cubes : Cube[]) : boolean {
+    private isCollisionTetris(cubes : Cube[], containCurr : boolean = false) : boolean {
 
         for(let i = 0; i < this._tetrises.length; i++){
             const currTetris = this._tetrises[i];
-            if(currTetris !== this._currTetris){
+            if(currTetris !== this._currTetris && containCurr){
                 for(let j = 0; j < cubes.length; j++){
                     if (currTetris.findCubeByPos(cubes[j].pos)){
                         return true;
                     }
-                }
+                }  
             }
         }
 
@@ -208,6 +211,73 @@ export default class Game {
     public stop(){
         this._downLooper.stop();
         this._drawLooper.stop();
+    }
+
+    private erase(){
+        this._downLooper.stop();
+        const eraseY = this.eraseCubes();
+        this.removeTetris();
+        this.downCubes(eraseY);
+        this._downLooper.start();
+    }
+
+    //回傳這次應erase的y座標
+    private eraseCubes() : number[]{
+
+        const count : Cube[][] = [];
+        const eraseY : number[] = [];
+
+        for(let i = 0; i < this._scene.row; i++){
+            count.push([]);
+        }
+
+        this._tetrises.forEach(tetris => {
+            tetris.cubes.forEach(cube => {
+                //若cube沒被清除則加入
+                if(!cube.isErase){
+                    count[cube.pos.y].push(cube);
+                }
+            });
+        });
+
+        count.forEach((row, r) => {
+            //該列都有元素
+            if(row.length === this._scene.column){
+                row.forEach(cube => {
+                    cube.isErase = true;
+                });
+                eraseY.push(r);
+            }
+        });
+
+        return eraseY;
+    }
+
+    private removeTetris() {
+        this._tetrises.forEach(target => {
+            const existCubes = target.cubes.filter(cube => {
+                return cube.isErase === false;
+            });
+
+            //cube.isErase 全是 false
+            if(existCubes.length === 0){
+                //移除該tetris
+                this._tetrises = this._tetrises.filter(tetris => tetris !== target);
+            }
+        });
+    }
+
+    private downCubes(eraseY : number[]) {
+        console.log(eraseY);
+        console.log(this._tetrises);
+        this._tetrises.forEach(tetris => {
+            tetris.cubes.forEach(cube => {
+                //下降量
+                const down = eraseY.filter(y => y > cube.pos.y).length;
+                cube.pos = {x: cube.pos.x, y: cube.pos.y + down};
+            });
+        });
+       
     }
 
 }

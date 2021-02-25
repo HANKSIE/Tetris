@@ -69,14 +69,16 @@ export default class Scene {
         this._ctx.strokeStyle = "#555555";
         tetrises.forEach(tetris => {
             tetris.cubes.forEach(cube => {
-                const p = cube.pos;
-                this._ctx.beginPath();
-                const x = p.x * this.unit;
-                const y = p.y * this.unit;
-                this._ctx.rect(x, y, this.unit , this.unit);
-                this._ctx.fillStyle = tetris.color;
-                this._ctx.fill();
-                this._ctx.stroke();
+                if(!cube.isErase){
+                    const p = cube.pos;
+                    this._ctx.beginPath();
+                    const x = p.x * this.unit;
+                    const y = p.y * this.unit;
+                    this._ctx.rect(x, y, this.unit , this.unit);
+                    this._ctx.fillStyle = tetris.color;
+                    this._ctx.fill();
+                    this._ctx.stroke();
+                }
             });
         })
        

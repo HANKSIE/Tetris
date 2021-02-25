@@ -79,8 +79,10 @@ export default abstract class Tetris {
         return cubes;
     }
 
-    public findCubeByPos(pos : Point) : Cube | undefined{
-        const cube = this._cubes.find(cube => cube.pos.x === pos.x && cube.pos.y === pos.y);
+    public findCubeByPos(pos : Point, isErase : boolean = false) : Cube | undefined{
+        const cube = this._cubes.find(cube => {
+            return cube.pos.x === pos.x && cube.pos.y === pos.y && cube.isErase === isErase;
+        });
         return cube;
     }
 
@@ -145,6 +147,5 @@ export default abstract class Tetris {
         this._nextShape = this._currentShape.slice();
         this._nextPos = {x: this.pos.x, y: this.pos.y};
     }
-
 }
 
