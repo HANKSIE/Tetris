@@ -1,6 +1,7 @@
 import Cube from "./cube";
 import CubeFactory from "../factory/cube";
-import { Point } from "../utilize/coordinate";
+import PointFactory from "../factory/point";
+import Point from "../util/point";
 
 type Shape = Array<Array<number>>;
 
@@ -18,9 +19,9 @@ export default abstract class Tetris {
     protected _currentShape :  Shape;
     protected _nextShape :  Shape;
   
-    protected _originPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
-    protected _pos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
-    protected _nextPos : Point = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER};
+    protected _originPos : Point = PointFactory.createMin();
+    protected _pos : Point = PointFactory.createMin();
+    protected _nextPos : Point = PointFactory.createMin();
 
     protected _cubes : Cube[] = [];
 
@@ -38,21 +39,19 @@ export default abstract class Tetris {
 
     public set pos(value : Point) {
         this._pos = value;
-        this._cubes = this.generateCubes(this.pos, this._currentShape, this._color);
+        this._cubes = this.generateCubes(this.pos, this._currentShape);
     }
 
     public get originPos() : Point {
         return this._originPos;
     }
 
-    public set originPos(value: Point) {
+    public set originPos(p: Point) {
 
         if(this.originPos.x === Number.MIN_SAFE_INTEGER && this.originPos.y === Number.MIN_SAFE_INTEGER){
-            const {x, y} = value;
-
-            this._originPos = {x, y};  
-            this.pos = {x, y};  
-            this._nextPos = {x, y};  
+            this._originPos = PointFactory.createByPoint(p);  
+            this.pos = PointFactory.createByPoint(p);  
+            this._nextPos = PointFactory.createByPoint(p);  
         }
 
     }
@@ -62,7 +61,7 @@ export default abstract class Tetris {
     }
 
     public get nextCubes() : Cube[] {
-        return this.generateCubes(this._nextPos, this._nextShape, this._color);
+        return this.generateCubes(this._nextPos, this._nextShape);
     }
 
     public get color() : string {
@@ -80,15 +79,15 @@ export default abstract class Tetris {
         this._currentShape = this._originShape.slice();
     }
 
-    private generateCubes(pos : Point, shape : Shape, color : string) : Cube[]{
+    private generateCubes(pos : Point, shape : Shape) : Cube[]{
         const cubes : Cube[]= [];
-
-        const { x, y } = pos;
 
         shape.forEach((row, r) => {
             row.forEach((element, c) => {
                 if(element === ShapeValue.DEFINED){
-                    cubes.push(CubeFactory.create(color, {x: c, y: r}, {x: x + c, y: r + y}));
+                    const relationPos = PointFactory.create(c, r);
+                    const position = relationPos.plus(pos);
+                    cubes.push(CubeFactory.create(relationPos, position));
                 }
             });
         });
@@ -129,11 +128,11 @@ export default abstract class Tetris {
                 newShape[newRow][row - r - 1] = val;
 
                 if(val === ShapeValue.DEFINED) {
-                    const originCube = this.findCubeByPos({x: c, y: r});
+                    const originCube = this.findCubeByPos(PointFactory.create(c, r));
                     if(originCube){
-                        const newCube = CubeFactory.create(this._color, {x: r, y: newRow});
+                        const newCube = CubeFactory.create(PointFactory.create(r, newRow));
                         //tetris左上角之座標 + 偏移量
-                        newCube.pos = {x: r + this.pos.x,  y: newRow + this.pos.y};
+                        newCube.pos = this.pos.plusWith(r, c);
                     }
                 }
                 newRow++;
@@ -144,31 +143,30 @@ export default abstract class Tetris {
     }
 
     public moveToLeft(){
-        this._nextPos = {x: this.pos.x - 1, y: this.pos.y};
+        this._nextPos = this.pos.subtractX(1);
     }
 
     public moveToRight(){
-        this._nextPos = {x: this.pos.x + 1, y: this.pos.y};
+        this._nextPos = this.pos.plusX(1);
     }
 
     public down(){
-        this._nextPos = {x: this.pos.x, y: this.pos.y + 1};
+        this._nextPos = this.pos.plusY(1);
     }
 
     public update(){
         this._currentShape = this._nextShape.slice();
-        this.pos = {x: this._nextPos.x, y: this._nextPos.y};
+        this.pos = PointFactory.createByPoint(this._nextPos);
     }
 
     public back(){
         this._nextShape = this._currentShape.slice();
-        this._nextPos = {x: this.pos.x, y: this.pos.y};
+        this._nextPos = PointFactory.createByPoint(this.pos);
     }
 
     public posInitialize (){
-        const {x, y} = this.originPos;
-        this.pos = {x, y};
-        this._nextPos = {x, y};
+        this.pos = PointFactory.createByPoint(this.originPos);
+        this._nextPos = PointFactory.createByPoint(this.originPos);
     }
 }
 

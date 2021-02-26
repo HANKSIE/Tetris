@@ -1,10 +1,10 @@
+import Point from "../util/point";
 import Cube from "../widgets/cube";
-import { Point } from "../utilize/coordinate";
-
+import PointFactory from "./point";
 export default class CubeFactory {
     
-    public static create(color : string, relationPos : Point, mapPos : Point  = {x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER}) : Cube{
-        return new Cube(color, relationPos, mapPos);
+    public static create(relationPos : Point, pos : Point = PointFactory.createMin()) : Cube{
+        return new Cube(relationPos, pos);
     }
 
 }

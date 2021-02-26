@@ -1,10 +1,11 @@
 import Scene from "./widgets/scene";
 import Tetris from "./widgets/tetris";
 import Looper from "./looper";
-import { KeyboardOperate } from "./utilize/operate";
+import { KeyboardOperate } from "./contract/operate";
 import TetrisFactory from "./factory/tetris";
-import { Point } from "./utilize/coordinate";
 import Cube from "./widgets/cube";
+import PointFactory from "./factory/point";
+import Point from "./util/point";
 
 export default class Game {
 
@@ -154,11 +155,11 @@ export default class Game {
         for(let r = -1; r <= row ; r++){
             if(r === -1 || r === row){
                 for(let i = 0; i < column; i++){
-                    boundaries.push({x: i, y: r});
+                    boundaries.push(PointFactory.create(i, r));
                 }
             }
-            boundaries.push({x: -1, y: r});
-            boundaries.push({x: column, y: r});
+            boundaries.push(PointFactory.create(-1, r));
+            boundaries.push(PointFactory.create(column, r));
         }
 
         return boundaries;
@@ -321,7 +322,7 @@ export default class Game {
             tetris.cubes.forEach(cube => {
                 //下降量
                 const down = eraseY.filter(y => y > cube.pos.y).length;
-                cube.pos = {x: cube.pos.x, y: cube.pos.y + down};
+                cube.pos = cube.pos.plusY(down);
             });
         });
     }
