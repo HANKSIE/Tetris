@@ -2,6 +2,7 @@ import Cube from "./cube";
 import CubeFactory from "../factory/cube";
 import PointFactory from "../factory/point";
 import Point from "../util/point";
+import ArrayHelper from "../helper/array";
 
 type Shape = Array<Array<number>>;
 
@@ -55,6 +56,14 @@ export default abstract class Tetris {
         }
 
     }
+
+    public get originWidth() : number{
+        return this._originShape[0].length;
+    }
+
+    public get originHeight() : number{
+        return this._originShape.length;
+    }
     
     public get cubes() : Cube[] {
         return this._cubes;
@@ -95,9 +104,9 @@ export default abstract class Tetris {
         return cubes;
     }
 
-    public findCubeByPos(pos : Point, isErase : boolean = false) : Cube | undefined{
+    public findCubeByPos(pos : Point, isClear : boolean = false) : Cube | undefined{
         const cube = this._cubes.find(cube => {
-            return cube.pos.x === pos.x && cube.pos.y === pos.y && cube.isErase === isErase;
+            return cube.pos.equal(pos) && cube.isClear === isClear;
         });
         return cube;
     }
@@ -109,15 +118,8 @@ export default abstract class Tetris {
     public rotate(){
         const row = this.height;
         const col = this.width;
-
-        //創造二維陣列
-        const initArr = [];
-        for(let r=0; r<col; r++){
-            initArr.push(Array(row).fill(ShapeValue.EMPTY));
-        }
-
-        //初始化
-        const newShape = initArr.slice();
+        
+        const newShape: Shape = ArrayHelper.create2D<ShapeValue>(col, row, ShapeValue.EMPTY);
 
         let newRow : number = 0;
 
@@ -142,11 +144,11 @@ export default abstract class Tetris {
         this._nextShape = newShape;
     }
 
-    public moveToLeft(){
+    public left(){
         this._nextPos = this.pos.subtractX(1);
     }
 
-    public moveToRight(){
+    public right(){
         this._nextPos = this.pos.plusX(1);
     }
 

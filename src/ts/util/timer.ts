@@ -1,4 +1,4 @@
-export default class Looper {
+export default class Timer {
 
     private _timerID : number | null = null;
     private _ms : number;
@@ -13,16 +13,16 @@ export default class Looper {
         this.start();
     }
 
-    private updateHandle : Function;
+    private _handle : Function;
 
-    constructor(updateHandle : Function, ms : number) {
+    constructor(handle : Function, ms : number) {
         this._ms = ms;
-        this.updateHandle = updateHandle;
+        this._handle = handle;
     }
 
     public start() {
         if(!this._timerID){
-            this._timerID = setInterval(this.updateHandle, this._ms);
+            this._timerID = setInterval(this._handle, this._ms);
         }
     }
 

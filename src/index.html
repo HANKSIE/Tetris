@@ -34,25 +34,28 @@
             justify-content: space-around;
             align-items: center;
             background-color: #444444;
-            height: 50%;
-            width: 100px;
+            height: 80%;
         }
 
         #hold-area {
             display: flex;
             flex-direction: column;
             background-color: #444444;
-            height: 50%;
-            width: 100px;
-        }
-
-        #one, #two, #three {
-            margin: 10px 0;
+            height: 80%;
         }
 
         .title {
             color: white;
             font-weight: bold;
+        }
+
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            margin: 5px;
         }
         
     </style>
@@ -60,18 +63,26 @@
 <body>
     <div id="game">
         <div id="hold-area">
-            <h2 class="title" >Hold</h2>
-            <canvas id="hold" width="80" height="80"></canvas>
+            <h2 class="title">Hold</h2>
+            <div class="canvas-wrapper">
+                <canvas id="hold" width="80" height="80"></canvas>
+            </div> 
             <button id="start">start</button>
             <button id="stop">stop</button>
             <button id="reset">reset</button>
         </div>
         <canvas id="scene"></canvas>
         <div id="prepare">
-            <h2 class="title" >Next</h2>
-            <canvas id="one"></canvas>
-            <canvas id="two"></canvas>
-            <canvas id="three"></canvas>
+            <h2 class="title">Next</h2>
+            <div class="canvas-wrapper">
+                <canvas id="one" width="80" height="80"></canvas>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="two" width="80" height="80"></canvas>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="three" width="80" height="80"></canvas>
+            </div> 
         </div>
     </div>
 </body>

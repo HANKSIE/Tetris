@@ -4,7 +4,7 @@ export default class Cube {
 
     public relationPos : Point;
     public pos : Point;
-    public isErase: boolean = false;
+    public isClear: boolean = false;
 
     constructor(relationPos : Point, pos : Point){
         this.relationPos = relationPos;
