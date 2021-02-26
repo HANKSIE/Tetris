@@ -21,17 +21,18 @@ const holdWindow : HoldWindow = GameWindowFactory.create(HoldWindow.name, hold, 
 
 mainWindow.initialize();
 
-let game : Game = new Game(mainWindow, [oneWindow, twoWindow, threeWindow], holdWindow);
+const game : Game = new Game(mainWindow, [oneWindow, twoWindow, threeWindow], holdWindow);
 
 start.addEventListener("click", ()=>{game.start()});
 stop.addEventListener("click", ()=>{game.stop()});
 reset.addEventListener("click", ()=>{
     game.stop();
-    game = new Game(mainWindow, [oneWindow, twoWindow, threeWindow], holdWindow);
     mainWindow.clear();
     oneWindow.clear();
     twoWindow.clear();
     threeWindow.clear();
     holdWindow.clear();
     mainWindow.renderGrid();
+    game.initialize();
+    game.start();
 });
