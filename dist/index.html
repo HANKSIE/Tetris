@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <style>
+
+        * {
+            margin: auto;
+            box-sizing: content-box;
+            font-family:monospace;
+        }
+
+        html, body {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #222222;
+        }
+        
+        #gameWindow {
+            background-color: #444444;
+            margin: 10px;
+        }
+
+        #game {
+            display: flex;
+            align-items: flex-start;
+            background: #666666;
+            padding: 10px;
+            width: fit-content;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .game-window-container {
+            background-color: #222222; 
+            border-radius: 10px; 
+            margin: 0;
+        }
+
+        .section-area {
+            display: flex;
+            flex-direction: column;
+            background-color: #222222;
+            margin: 0 10px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .title {
+            color: white;
+            font-weight: bold;
+        }
+
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            border: solid #888888 3px;
+            border-radius: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .button-group > button {
+            margin: 10px auto;
+        }
+
+        .button-group > button {
+            border: none;
+            padding: 10px;
+            background-color: #444444;
+            font-weight: bold;
+            color: #888888;
+            border-radius: 7px;
+        }
+
+        .button-group > button:focus {
+            outline: none;
+        }
+        
+        .desc {
+            margin-top: 30px;
+            padding: 20px;
+            border: solid white 3px;
+            color: white;
+            border-radius: 12px;
+        }
+
+    </style>
+<script defer src="bundle.min.js"></script></head>
+<body>
+    <div>
+        <div id="game">
+            <div id="hold-area" class="section-area">
+                <h2 class="title">Hold</h2>
+                <div class="canvas-wrapper">
+                    <canvas id="hold"></canvas>
+                </div>
+                <div class="button-group">
+                    <button id="start">start</button>
+                    <button id="stop">pause</button>
+                    <button id="reset">reset</button>
+                </div>
+            </div>
+            <div class="game-window-container">
+                <canvas id="gameWindow"></canvas>
+            </div>
+            <div id="next-area" class="section-area">
+                <h2 class="title">Next</h2>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div> 
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div> 
+            </div>
+        </div>
+
+        <div class="desc">
+            <h2>操作說明</h2>
+            <br>
+            <p><strong>↑</strong> => 旋轉</p>
+            <p><strong>↓</strong> => 加速</p>
+            <p><strong>←</strong> => 向左移動</p>
+            <p><strong>→</strong> => 向右移動</p>
+            <br>
+            <h3>快捷鍵</h3>
+            <br>
+            <p>Enter => start</p>
+            <p>P => pause</p>
+            <p>R => reset</p>
+        </div>
+</div>
+</body>
+</html>
