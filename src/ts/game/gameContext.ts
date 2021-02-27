@@ -10,6 +10,5 @@ export default interface GameContext {
     softDown : boolean;
     isDown : boolean;
     canHold : boolean; 
-    bottom: boolean;
     gameover: boolean
 }

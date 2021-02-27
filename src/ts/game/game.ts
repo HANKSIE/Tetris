@@ -84,14 +84,7 @@ export default class Game {
     
     private hardDrop : KeyboardOperate = (event: KeyboardEvent) => {
         if(event.key === " "){
-            this.stop();
-            
-            while(!this._context.bottom){
-                this.update();
-            }
-
-            this._context.bottom = false;
-            this.start();
+            this._downTimer.ms = 0;
         }
     }
 
@@ -172,18 +165,17 @@ export default class Game {
 
         //collision
         if(this._context.isDown){
-
+            this._downTimer.ms = this._downInterval;
             //發生碰撞且tetris的cubes的y都小於0
             if(this._context.currTetris.cubes.filter(cube => cube.pos.y >= 0).length === 0){
                 //gameover
                 this.stop();
                 this._gameWindow.renderTetris(this._context.tetrises);
-                alert("gameover");
                 this._context.gameover = true;
+                alert("gameover");
                 return;
             }
 
-            this._context.bottom = true;
             //消除方塊
             this.clearCubes();
             //產生新方塊
@@ -199,7 +191,6 @@ export default class Game {
                 this._gameWindow.renderTetris(this._context.tetrises);
             }
 
-            this._downTimer.ms = this._downInterval;
         }
 
         this._context.currTetris.back();
@@ -264,7 +255,6 @@ export default class Game {
             softDown: false,
             isDown: false,
             canHold: true, 
-            bottom: false,
             gameover: false,
         }
     }
