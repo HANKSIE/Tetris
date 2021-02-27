@@ -1,11 +1,11 @@
-import Tetris from "../widgets/tetris";
+import Tetris, { ShapeValue } from "../widgets/tetris";
 import Timer from "../util/timer";
-import  KeyboardOperate  from "./keyboardOperate";
+import KeyboardOperate  from "./keyboardOperate";
 import TetrisFactory from "../factory/tetris";
-import Cube from "../widgets/cube";
 import CubeEliminator from "./cubeEliminator";
 import GameWindow from "./gameWindow";
-import { GameContext, createGameContext } from "./gameContext";
+import GameContext from "./gameContext";
+import Collision, { BoundaryType } from "./collision";
 
 export default class Game {
 
@@ -15,6 +15,8 @@ export default class Game {
 
     private _downTimer : Timer;
     private _renderTimer : Timer;
+
+    private _collision : Collision;
 
     private readonly _downInterval : number = 450;
     private readonly _renderInterval : number = 50;
@@ -109,7 +111,7 @@ export default class Game {
         this.nextHandle();
     }
 
-    private down() {
+    private currTetrisDown() {
         this._context.currTetris.down();
         this._context.isDown = true;
     }
@@ -119,7 +121,7 @@ export default class Game {
         this._prepareWindow = prepareWindow;
         this._holdWindow = holdWindow;
 
-        this._context = createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
+        this._context = this.createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
 
         this._context.tetrises.push(this._context.currTetris);
         this.initPrepareTetrises();
@@ -131,6 +133,18 @@ export default class Game {
         this._renderTimer = new Timer(() => {;
             this._mainWindow.render(this._context.tetrises);
         }, this._renderInterval);
+
+        this._collision = new Collision(
+            {
+                top: 0, 
+                bottom: mainWindow.height - 1, 
+                left: 0, 
+                right: mainWindow.width - 1
+            },
+            [
+                BoundaryType.Top
+            ]
+        );
         
     }
 
@@ -145,21 +159,30 @@ export default class Game {
     }
 
     private update(){
-        this.down();
+        this.currTetrisDown();
         this.nextHandle();
         this._context.isDown = false;
     }
 
     private nextHandle(){
-        const nextCubes = this._context.currTetris.nextCubes;
-       
-        if(!this.isCollisionTetris(nextCubes, true) && !this.isCollisionBoundary(nextCubes)){
+        if(!this._collision.isCollisionTetris(this._context.currTetris, this._context.tetrises) && !this._collision.isCollisionBoundary(this._context.currTetris)){
             this._context.currTetris.update();
             return;
         }
 
         //collision
         if(this._context.isDown){
+
+            //發生碰撞且tetris的cubes的y都小於0
+            if(this._context.currTetris.cubes.filter(cube => cube.pos.y >= 0).length === 0){
+                //gameover
+                this.stop();
+                this._mainWindow.renderTetris(this._context.tetrises);
+                alert("gameover");
+                this._context.gameover = true;
+                return;
+            }
+
             this._context.bottom = true;
             //消除方塊
             this.clearCubes();
@@ -170,22 +193,10 @@ export default class Game {
             this._context.canHold = true;
 
             //剛產生就發生碰撞
-            if(this.isCollisionTetris(this._context.currTetris.cubes, true)){
-
-                this._renderTimer.stop();
-                this._context.currTetris.up();
-                this._context.currTetris.upToTopOriginCubeBias();
+            if(this._collision.isCollisionTetris(this._context.currTetris, this._context.tetrises)){
+                this.upCurrTetris(); //上移
                 this._context.currTetris.update();
                 this._mainWindow.renderTetris(this._context.tetrises);
-               
-
-                //再檢查一次
-                if(this.isCollisionTetris(this._context.currTetris.cubes, true)){
-                    this._mainWindow.renderTetris(this._context.tetrises);
-                    this.stop();
-                    alert("gameover");
-                    return;
-                }
             }
 
             this._downTimer.ms = this._downInterval;
@@ -195,36 +206,10 @@ export default class Game {
 
     }
 
-    private isCollisionTetris(nextCubes : Cube[], containCurr : boolean = false) : boolean {
-
-        for(let i = 0; i < this._context.tetrises.length; i++){
-            const currTetris = this._context.tetrises[i];
-            if(currTetris !== this._context.currTetris && containCurr){
-                for(let j = 0; j < nextCubes.length; j++){
-                    if (currTetris.findCubeByPos(nextCubes[j].pos)){
-                        return true;
-                    }
-                }  
-            }
-        }
-
-        return false
-    }
-
-    private isCollisionBoundary(nextCubes : Cube[]) : boolean {
-
-        for(let i = 0; i < nextCubes.length; i++){
-            const { x, y } = nextCubes[i].pos;
-            if(x < 0 || x >= this._mainWindow.width || y < -1 || y >= this._mainWindow.height){
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
     public start(){
+        if(this._context.gameover){
+            this.initialize();
+        }
         this._downTimer.start();
         this._renderTimer.start();
         this.renderPrepareWindow();
@@ -240,7 +225,15 @@ export default class Game {
     private clearCubes(){
         this._downTimer.stop();
         const clearY =  CubeEliminator.clear(this._mainWindow.width, this._mainWindow.height, this._context.tetrises);
-        this.downCubes(clearY);
+      
+        this._context.tetrises.forEach(tetris => {
+            tetris.cubes.forEach(cube => {
+                //下降量
+                const down = clearY.filter(y => y > cube.pos.y).length;
+                cube.pos = cube.pos.plusY(down);
+            });
+        });
+
         this._downTimer.start();
     }
 
@@ -251,24 +244,29 @@ export default class Game {
         this.renderPrepareWindow();
     }
 
-    private downCubes(clearY : number[]) {
-        this._context.tetrises.forEach(tetris => {
-            tetris.cubes.forEach(cube => {
-                //下降量
-                const down = clearY.filter(y => y > cube.pos.y).length;
-                cube.pos = cube.pos.plusY(down);
-            });
-        });
-    }
-
     public initialize() {
-        this._context = createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
+        this._context = this.createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
         this._context.tetrises.push(this._context.currTetris);
 
         this.initPrepareTetrises();
         this.windowInit();
 
         this.removeUserBehavior();
+    }
+
+    private createGameContext(curr : Tetris) : GameContext{
+        return {
+            currTetris : curr,
+            tetrises: [],
+            prepareTetrises: [],
+            holdTetris: null,
+        
+            softDown: false,
+            isDown: false,
+            canHold: true, 
+            bottom: false,
+            gameover: false,
+        }
     }
 
     private windowInit(){
@@ -288,6 +286,28 @@ export default class Game {
         this._prepareWindow.forEach((w, i) => {
             w.render([this._context.prepareTetrises[i]]);
         });
+    }
+
+    private upCurrTetris(){
+        const currTetris = this._context.currTetris
+        const shape = currTetris.currentShape;
+        const { width, height } = currTetris;
+
+        //上移量 = _currShape第一行與有定義的第一行之距離
+        for(let r = 0; r < height; r++) {
+            for(let c = 0; c < width; c++){
+                if(shape[r][c] === ShapeValue.DEFINED){
+                    currTetris.pos = currTetris.pos.subtractY(r);
+                    break;
+                }
+            }
+        }
+
+        //上移_currShape之高度 - 1
+        for(let r = 0; r < height - 1; r++) {
+            currTetris.up();
+        }
+
     }
 
 }

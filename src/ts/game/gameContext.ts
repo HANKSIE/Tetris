@@ -1,6 +1,6 @@
 import Tetris from "../widgets/tetris";
 
-export interface GameContext {
+export default interface GameContext {
 
     currTetris : Tetris;
     tetrises : Tetris[] ;
@@ -11,19 +11,5 @@ export interface GameContext {
     isDown : boolean;
     canHold : boolean; 
     bottom: boolean;
-}
-
-export function createGameContext(curr : Tetris) : GameContext{
-    return {
-    
-        currTetris : curr,
-        tetrises: [],
-        prepareTetrises: [],
-        holdTetris: null,
-    
-        softDown: false,
-        isDown: false,
-        canHold: true, 
-        bottom: false,
-    }
+    gameover: boolean
 }

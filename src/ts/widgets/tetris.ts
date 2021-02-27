@@ -6,7 +6,7 @@ import ArrayHelper from "../helper/array";
 
 type Shape = Array<Array<number>>;
 
-enum ShapeValue {
+export enum ShapeValue {
     UNDEFINED = -1,
     DEFINED = 1,
     EMPTY = 0,
@@ -75,6 +75,10 @@ export default abstract class Tetris {
 
     public get color() : string {
         return this._color;
+    }
+
+    public get currentShape() : Shape {
+        return this._currentShape.slice();
     }
 
     public abstract shapeDefine() : Shape;
@@ -160,17 +164,6 @@ export default abstract class Tetris {
 
     public right(){
         this._nextPos = this.pos.plusX(1);
-    }
-
-    public upToTopOriginCubeBias(){
-        for(let r = 0; r < this.originHeight; r++) {
-            for(let c = 0; c < this.originWidth; c++){
-                if(this._originShape[r][c] === ShapeValue.DEFINED){
-                    this._nextPos = this.pos.subtractY(r);
-                    return;
-                }
-            }
-        }
     }
 
     public up(){
