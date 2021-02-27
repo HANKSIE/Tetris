@@ -25,7 +25,7 @@ const game : Game = new Game(mainWindow, [oneWindow, twoWindow, threeWindow], ho
 
 start.addEventListener("click", ()=>{game.start()});
 stop.addEventListener("click", ()=>{game.stop()});
-reset.addEventListener("click", ()=>{
+reset.addEventListener("click", (event)=>{
     game.stop();
     mainWindow.clear();
     oneWindow.clear();
@@ -35,5 +35,6 @@ reset.addEventListener("click", ()=>{
     mainWindow.renderGrid();
     game.initialize();
     game.start();
-    console.log("reset click");
+    const resetBtn : HTMLButtonElement = event.target as HTMLButtonElement;
+    resetBtn.blur(); //若不移除focus按空白鍵會一直觸發
 });
