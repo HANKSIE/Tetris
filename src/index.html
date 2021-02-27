@@ -10,38 +10,45 @@
         * {
             margin: auto;
             box-sizing: content-box;
+            font-family:monospace;
         }
 
         html, body {
             height: 100%;
-            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #222222;
         }
         
         #gameWindow {
             background-color: #444444;
+            margin: 10px;
         }
 
         #game {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
+            align-items: flex-start;
+            background: #666666;
+            padding: 10px;
+            width: fit-content;
+            border-radius: 10px;
+            margin-top: 20px;
         }
 
-        #prepare {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            background-color: #444444;
-            height: 80%;
+        .game-window-container {
+            background-color: #222222; 
+            border-radius: 10px; 
+            margin: 0;
         }
 
-        #hold-area {
+        .section-area {
             display: flex;
             flex-direction: column;
-            background-color: #444444;
-            height: 80%;
+            background-color: #222222;
+            margin: 0 10px;
+            padding: 10px;
+            border-radius: 10px;
         }
 
         .title {
@@ -53,37 +60,97 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             margin: 5px;
+            border: solid #888888 3px;
+            border-radius: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .button-group > button {
+            margin: 10px auto;
+        }
+
+        .button-group > button {
+            border: none;
+            padding: 10px;
+            background-color: #444444;
+            font-weight: bold;
+            color: #888888;
+            border-radius: 7px;
+        }
+
+        .button-group > button:focus {
+            outline: none;
         }
         
+        .desc {
+            margin-top: 30px;
+            padding: 20px;
+            border: solid white 3px;
+            color: white;
+            border-radius: 12px;
+        }
+
     </style>
 </head>
 <body>
-    <div id="game">
-        <div id="hold-area">
-            <h2 class="title">Hold</h2>
-            <div class="canvas-wrapper">
-                <canvas id="hold" width="80" height="80"></canvas>
-            </div> 
-            <button id="start">start</button>
-            <button id="stop">stop</button>
-            <button id="reset">reset</button>
-        </div>
-        <canvas id="gameWindow"></canvas>
-        <div id="prepare">
-            <h2 class="title">Next</h2>
-            <div class="canvas-wrapper">
-                <canvas id="one" width="80" height="80"></canvas>
+    <div>
+        <div id="game">
+            <div id="hold-area" class="section-area">
+                <h2 class="title">Hold</h2>
+                <div class="canvas-wrapper">
+                    <canvas id="hold"></canvas>
+                </div>
+                <div class="button-group">
+                    <button id="start">start</button>
+                    <button id="stop">pause</button>
+                    <button id="reset">reset</button>
+                </div>
             </div>
-            <div class="canvas-wrapper">
-                <canvas id="two" width="80" height="80"></canvas>
+            <div class="game-window-container">
+                <canvas id="gameWindow"></canvas>
             </div>
-            <div class="canvas-wrapper">
-                <canvas id="three" width="80" height="80"></canvas>
-            </div> 
+            <div id="next-area" class="section-area">
+                <h2 class="title">Next</h2>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div> 
+                <div class="canvas-wrapper">
+                    <canvas></canvas>
+                </div> 
+            </div>
         </div>
-    </div>
+
+        <div class="desc">
+            <h2>操作說明</h2>
+            <br>
+            <p><strong>↑</strong> => 旋轉</p>
+            <p><strong>↓</strong> => 加速</p>
+            <p><strong>←</strong> => 向左移動</p>
+            <p><strong>→</strong> => 向右移動</p>
+            <br>
+            <h3>快捷鍵</h3>
+            <br>
+            <p>Enter => start</p>
+            <p>P => pause</p>
+            <p>R => reset</p>
+        </div>
+</div>
 </body>
 </html>

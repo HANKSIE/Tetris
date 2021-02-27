@@ -4,7 +4,6 @@ import Tetris from "../../widgets/tetris";
 export class MainWindow extends GameWindow {
     
     public renderTetris(tetrises: Tetris[]): void {
-        this._context.strokeStyle = "#555555";
         tetrises.forEach(tetris => {
             tetris.cubes.forEach(cube => {
                 if(!cube.isClear){
@@ -15,7 +14,6 @@ export class MainWindow extends GameWindow {
                     this._context.rect(x, y, this._unit , this._unit);
                     this._context.fillStyle = tetris.color;
                     this._context.fill();
-                    this._context.stroke();
                 }
             });
         })
@@ -29,8 +27,8 @@ export class MainWindow extends GameWindow {
     }
 
     protected renderDefine(tetrises: Tetris[]): void {
-        this.renderGrid();
         this.renderTetris(tetrises);
+        this.renderGrid();
     }
 
     public initialize() {
