@@ -27,12 +27,6 @@ start.addEventListener("click", ()=>{game.start()});
 stop.addEventListener("click", ()=>{game.stop()});
 reset.addEventListener("click", (event)=>{
     game.stop();
-    mainWindow.clear();
-    oneWindow.clear();
-    twoWindow.clear();
-    threeWindow.clear();
-    holdWindow.clear();
-    mainWindow.renderGrid();
     game.initialize();
     game.start();
     const resetBtn : HTMLButtonElement = event.target as HTMLButtonElement;

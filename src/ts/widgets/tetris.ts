@@ -115,6 +115,16 @@ export default abstract class Tetris {
         return this._cubes.find(el => el === cube);
     }
 
+    public randomRotateShape() {
+        const rotateTimes : number = Math.floor(Math.random() * 4);
+
+        for(let i=0; i < rotateTimes; i++){
+            this.rotate();
+        }
+       
+        this._currentShape = this._nextShape.slice();
+    }
+
     public rotate(){
         const row = this.height;
         const col = this.width;
@@ -150,6 +160,21 @@ export default abstract class Tetris {
 
     public right(){
         this._nextPos = this.pos.plusX(1);
+    }
+
+    public upToTopOriginCubeBias(){
+        for(let r = 0; r < this.originHeight; r++) {
+            for(let c = 0; c < this.originWidth; c++){
+                if(this._originShape[r][c] === ShapeValue.DEFINED){
+                    this._nextPos = this.pos.subtractY(r);
+                    return;
+                }
+            }
+        }
+    }
+
+    public up(){
+        this._nextPos = this.pos.subtractY(1);
     }
 
     public down(){

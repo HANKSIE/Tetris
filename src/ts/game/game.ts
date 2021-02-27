@@ -195,9 +195,21 @@ export default class Game {
 
             //剛產生就發生碰撞
             if(this.isCollisionTetris(this._context.currTetris.cubes, true)){
-                this.stop();
-                alert("gameover");
-                return;
+
+                this._renderTimer.stop();
+                this._context.currTetris.up();
+                this._context.currTetris.upToTopOriginCubeBias();
+                this._context.currTetris.update();
+                this._mainWindow.renderTetris(this._context.tetrises);
+               
+
+                //再檢查一次
+                if(this.isCollisionTetris(this._context.currTetris.cubes, true)){
+                    this._mainWindow.renderTetris(this._context.tetrises);
+                    this.stop();
+                    // alert("gameover");
+                    return;
+                }
             }
 
             this._downTimer.ms = this._downInterval;
@@ -227,7 +239,7 @@ export default class Game {
 
         for(let i = 0; i < nextCubes.length; i++){
             const { x, y } = nextCubes[i].pos;
-            if(x < 0 || x >= this._mainWindow.width || y < 0 || y >= this._mainWindow.height){
+            if(x < 0 || x >= this._mainWindow.width || y < -1 || y >= this._mainWindow.height){
                 return true;
             }
         }
@@ -261,7 +273,6 @@ export default class Game {
         this._context.tetrises.push(this._context.currTetris);
         this._context.prepareTetrises.push(TetrisFactory.createRandom(this._mainWindow.width));
         this.renderPrepareWindow();
-        
     }
 
     private downCubes(clearY : number[]) {
@@ -279,6 +290,14 @@ export default class Game {
         this._context.tetrises.push(this._context.currTetris);
 
         this.initPrepareTetrises();
+        this.windowInit();
+    }
+
+    private windowInit(){
+        this._mainWindow.clear();
+        this._mainWindow.renderGrid();
+        this._prepareWindow.forEach(w => w.clear());
+        this._holdWindow.clear();
     }
 
     private initPrepareTetrises() {

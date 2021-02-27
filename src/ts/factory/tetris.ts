@@ -15,6 +15,7 @@ export default class TetrisFactory {
 
         const x = Math.floor(sceneColumn / 2 - tetris.width / 2);
 
+        tetris.randomRotateShape();
         tetris.originPos = PointFactory.create(x, 0);
         
         return tetris;
