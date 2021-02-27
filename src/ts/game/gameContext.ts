@@ -10,7 +10,6 @@ export interface GameContext {
     softDown : boolean;
     isDown : boolean;
     canHold : boolean; 
-    start : boolean;
     bottom: boolean;
 }
 
@@ -25,7 +24,6 @@ export function createGameContext(curr : Tetris) : GameContext{
         softDown: false,
         isDown: false,
         canHold: true, 
-        start: false,
         bottom: false,
     }
 }

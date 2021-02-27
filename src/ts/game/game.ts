@@ -23,40 +23,24 @@ export default class Game {
     private _context: GameContext;
 
     private moveLeft : KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "ArrowLeft"){
             this._context.currTetris.left();
         }
     }
     
     private moveRight : KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "ArrowRight"){
             this._context.currTetris.right();
         }
     }
     
     private rotate : KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "ArrowUp"){
             this._context.currTetris.rotate();
         }
     }
 
     private hold: KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "c" && this._context.canHold){
             this._context.canHold = false;
             if(this._context.holdTetris){
@@ -79,10 +63,6 @@ export default class Game {
     }
     
     private softDrop : KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "ArrowDown"){
             if(!this._context.softDown){
                 this._downTimer.ms = this._downTimer.ms - this._speedIncrease;
@@ -92,10 +72,6 @@ export default class Game {
     }
     
     private restoreSoftDrop: KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === "ArrowDown"){
             if(this._context.softDown){
                 this._downTimer.ms = this._downTimer.ms + this._speedIncrease;
@@ -105,10 +81,6 @@ export default class Game {
     }
     
     private hardDrop : KeyboardOperate = (event: KeyboardEvent) => {
-        if(!this._context.start){
-            return;    
-        }
-
         if(event.key === " "){
             this.stop();
             
@@ -119,6 +91,22 @@ export default class Game {
             this._context.bottom = false;
             this.start();
         }
+    }
+
+    private userKeyDownBehavior = (event : KeyboardEvent) => {
+        this.moveLeft(event);
+        this.moveRight(event);
+        this.rotate(event);
+        this.softDrop(event);
+        this.hardDrop(event);
+        this.hold(event);
+      
+        this.nextHandle();
+    }
+
+    private userKeyUpBehavior = (event : KeyboardEvent) => {
+        this.restoreSoftDrop(event);
+        this.nextHandle();
     }
 
     private down() {
@@ -144,28 +132,16 @@ export default class Game {
             this._mainWindow.render(this._context.tetrises);
         }, this._renderInterval);
         
-       
-        this.registerKeyBoardEvent();
     }
 
-    private registerKeyBoardEvent(){
+    private registerUserBehavior(){
+        document.addEventListener("keydown", this.userKeyDownBehavior);
+        document.addEventListener("keyup", this.userKeyUpBehavior);
+    }
 
-        document.addEventListener("keydown", (event : KeyboardEvent) => {
-            
-            this.moveLeft(event);
-            this.moveRight(event);
-            this.rotate(event);
-            this.softDrop(event);
-            this.hardDrop(event);
-            this.hold(event);
-          
-            this.nextHandle();
-        });
-
-        document.addEventListener("keyup", (event : KeyboardEvent) => {
-            this.restoreSoftDrop(event);
-            this.nextHandle();
-        });
+    private removeUserBehavior(){
+        document.removeEventListener("keydown", this.userKeyDownBehavior);
+        document.removeEventListener("keyup", this.userKeyUpBehavior);
     }
 
     private update(){
@@ -207,7 +183,7 @@ export default class Game {
                 if(this.isCollisionTetris(this._context.currTetris.cubes, true)){
                     this._mainWindow.renderTetris(this._context.tetrises);
                     this.stop();
-                    // alert("gameover");
+                    alert("gameover");
                     return;
                 }
             }
@@ -251,14 +227,14 @@ export default class Game {
     public start(){
         this._downTimer.start();
         this._renderTimer.start();
-        this._context.start = true;
         this.renderPrepareWindow();
+        this.registerUserBehavior();
     }
 
     public stop(){
         this._downTimer.stop();
         this._renderTimer.stop();
-        this._context.start = false;
+        this.removeUserBehavior();
     }
 
     private clearCubes(){
@@ -291,6 +267,8 @@ export default class Game {
 
         this.initPrepareTetrises();
         this.windowInit();
+
+        this.removeUserBehavior();
     }
 
     private windowInit(){
