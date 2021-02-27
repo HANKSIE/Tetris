@@ -23,24 +23,40 @@ export default class Game {
     private _context: GameContext;
 
     private moveLeft : KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "ArrowLeft"){
             this._context.currTetris.left();
         }
     }
     
     private moveRight : KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "ArrowRight"){
             this._context.currTetris.right();
         }
     }
     
     private rotate : KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "ArrowUp"){
             this._context.currTetris.rotate();
         }
     }
 
     private hold: KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "c" && this._context.canHold){
             this._context.canHold = false;
             if(this._context.holdTetris){
@@ -63,6 +79,10 @@ export default class Game {
     }
     
     private softDrop : KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "ArrowDown"){
             if(!this._context.softDown){
                 this._downTimer.ms = this._downTimer.ms - this._speedIncrease;
@@ -72,6 +92,10 @@ export default class Game {
     }
     
     private restoreSoftDrop: KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === "ArrowDown"){
             if(this._context.softDown){
                 this._downTimer.ms = this._downTimer.ms + this._speedIncrease;
@@ -81,14 +105,18 @@ export default class Game {
     }
     
     private hardDrop : KeyboardOperate = (event: KeyboardEvent) => {
+        if(!this._context.start){
+            return;    
+        }
+
         if(event.key === " "){
             this.stop();
             
-            while(!this._context.nextRound){
+            while(!this._context.bottom){
                 this.update();
             }
 
-            this._context.nextRound = false;
+            this._context.bottom = false;
             this.start();
         }
     }
@@ -124,14 +152,12 @@ export default class Game {
 
         document.addEventListener("keydown", (event : KeyboardEvent) => {
             
-            if(this._context.start){
-                this.moveLeft(event);
-                this.moveRight(event);
-                this.rotate(event);
-                this.softDrop(event);
-                this.hardDrop(event);
-                this.hold(event);
-            }
+            this.moveLeft(event);
+            this.moveRight(event);
+            this.rotate(event);
+            this.softDrop(event);
+            this.hardDrop(event);
+            this.hold(event);
           
             this.nextHandle();
         });
@@ -149,7 +175,6 @@ export default class Game {
     }
 
     private nextHandle(){
-
         const nextCubes = this._context.currTetris.nextCubes;
        
         if(!this.isCollisionTetris(nextCubes, true) && !this.isCollisionBoundary(nextCubes)){
@@ -159,8 +184,7 @@ export default class Game {
 
         //collision
         if(this._context.isDown){
-
-            this._context.nextRound = true;
+            this._context.bottom = true;
             //消除方塊
             this.clearCubes();
             //產生新方塊
@@ -174,10 +198,9 @@ export default class Game {
                 this.stop();
                 alert("gameover");
                 return;
-            }else {
-                this._downTimer.ms = this._downInterval;
             }
 
+            this._downTimer.ms = this._downInterval;
         }
 
         this._context.currTetris.back();
@@ -237,7 +260,6 @@ export default class Game {
         this._context.currTetris = this._context.prepareTetrises.shift() as Tetris;
         this._context.tetrises.push(this._context.currTetris);
         this._context.prepareTetrises.push(TetrisFactory.createRandom(this._mainWindow.width));
-
         this.renderPrepareWindow();
         
     }
@@ -257,8 +279,6 @@ export default class Game {
         this._context.tetrises.push(this._context.currTetris);
 
         this.initPrepareTetrises();
-        this._downTimer.stop();
-        this._renderTimer.stop();
     }
 
     private initPrepareTetrises() {

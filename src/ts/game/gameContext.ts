@@ -11,7 +11,7 @@ export interface GameContext {
     isDown : boolean;
     canHold : boolean; 
     start : boolean;
-    nextRound: boolean;
+    bottom: boolean;
 }
 
 export function createGameContext(curr : Tetris) : GameContext{
@@ -26,6 +26,6 @@ export function createGameContext(curr : Tetris) : GameContext{
         isDown: false,
         canHold: true, 
         start: false,
-        nextRound: false,
+        bottom: false,
     }
 }

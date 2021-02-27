@@ -35,4 +35,5 @@ reset.addEventListener("click", ()=>{
     mainWindow.renderGrid();
     game.initialize();
     game.start();
+    console.log("reset click");
 });
