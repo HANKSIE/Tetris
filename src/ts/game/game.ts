@@ -9,7 +9,7 @@ import Collision, { BoundaryType } from "./collision";
 
 export default class Game {
 
-    private _mainWindow : GameWindow;
+    private _gameWindow : GameWindow;
     private _prepareWindow : GameWindow[];
     private _holdWindow : GameWindow;
 
@@ -116,12 +116,12 @@ export default class Game {
         this._context.isDown = true;
     }
 
-    constructor(mainWindow: GameWindow, prepareWindow: GameWindow[], holdWindow: GameWindow){
-        this._mainWindow = mainWindow;
+    constructor(gameWindow: GameWindow, prepareWindow: GameWindow[], holdWindow: GameWindow){
+        this._gameWindow = gameWindow;
         this._prepareWindow = prepareWindow;
         this._holdWindow = holdWindow;
 
-        this._context = this.createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
+        this._context = this.createGameContext(TetrisFactory.createRandom(this._gameWindow.width));
 
         this._context.tetrises.push(this._context.currTetris);
         this.initPrepareTetrises();
@@ -131,15 +131,15 @@ export default class Game {
         }, this._downInterval);
 
         this._renderTimer = new Timer(() => {;
-            this._mainWindow.render(this._context.tetrises);
+            this._gameWindow.render(this._context.tetrises);
         }, this._renderInterval);
 
         this._collision = new Collision(
             {
                 top: 0, 
-                bottom: mainWindow.height - 1, 
+                bottom: gameWindow.height - 1, 
                 left: 0, 
-                right: mainWindow.width - 1
+                right: gameWindow.width - 1
             },
             [
                 BoundaryType.Top
@@ -177,7 +177,7 @@ export default class Game {
             if(this._context.currTetris.cubes.filter(cube => cube.pos.y >= 0).length === 0){
                 //gameover
                 this.stop();
-                this._mainWindow.renderTetris(this._context.tetrises);
+                this._gameWindow.renderTetris(this._context.tetrises);
                 alert("gameover");
                 this._context.gameover = true;
                 return;
@@ -196,7 +196,7 @@ export default class Game {
             if(this._collision.isCollisionTetris(this._context.currTetris, this._context.tetrises)){
                 this.upCurrTetris(); //上移
                 this._context.currTetris.update();
-                this._mainWindow.renderTetris(this._context.tetrises);
+                this._gameWindow.renderTetris(this._context.tetrises);
             }
 
             this._downTimer.ms = this._downInterval;
@@ -224,7 +224,7 @@ export default class Game {
 
     private clearCubes(){
         this._downTimer.stop();
-        const clearY =  CubeEliminator.clear(this._mainWindow.width, this._mainWindow.height, this._context.tetrises);
+        const clearY =  CubeEliminator.clear(this._gameWindow.width, this._gameWindow.height, this._context.tetrises);
       
         this._context.tetrises.forEach(tetris => {
             tetris.cubes.forEach(cube => {
@@ -240,12 +240,12 @@ export default class Game {
     private updateCurrAndPrepare(){
         this._context.currTetris = this._context.prepareTetrises.shift() as Tetris;
         this._context.tetrises.push(this._context.currTetris);
-        this._context.prepareTetrises.push(TetrisFactory.createRandom(this._mainWindow.width));
+        this._context.prepareTetrises.push(TetrisFactory.createRandom(this._gameWindow.width));
         this.renderPrepareWindow();
     }
 
     public initialize() {
-        this._context = this.createGameContext(TetrisFactory.createRandom(this._mainWindow.width));
+        this._context = this.createGameContext(TetrisFactory.createRandom(this._gameWindow.width));
         this._context.tetrises.push(this._context.currTetris);
 
         this.initPrepareTetrises();
@@ -270,15 +270,15 @@ export default class Game {
     }
 
     private windowInit(){
-        this._mainWindow.clear();
-        this._mainWindow.renderGrid();
+        this._gameWindow.clear();
+        this._gameWindow.renderGrid();
         this._prepareWindow.forEach(w => w.clear());
         this._holdWindow.clear();
     }
 
     private initPrepareTetrises() {
         for(let i=0; i < this._prepareWindow.length; i++){
-            this._context.prepareTetrises.push(TetrisFactory.createRandom(this._mainWindow.width));
+            this._context.prepareTetrises.push(TetrisFactory.createRandom(this._gameWindow.width));
         }
     }
 
