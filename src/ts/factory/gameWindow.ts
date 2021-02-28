@@ -1,5 +1,5 @@
-import GameWindow from "../game/gameWindow";
-import { Types } from "../game/concrete/gameWindow";
+import GameWindow from "../game/window/gameWindow";
+import { Types } from "../game/window/concrete/gameWindow";
 
 export default class GameWindowFactory {
 

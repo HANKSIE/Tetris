@@ -1,5 +1,5 @@
 import GameWindow from "../gameWindow";
-import Tetris from "../../widgets/tetris";
+import Tetris from "../../../widgets/tetris";
 
 export class MainWindow extends GameWindow {
     

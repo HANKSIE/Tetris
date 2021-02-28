@@ -1,5 +1,5 @@
 import GameWindowFactory from "./factory/gameWindow";
-import { MainWindow, HoldWindow, PrepareWindow } from "./game/concrete/gameWindow";
+import { MainWindow, HoldWindow, PrepareWindow } from "./game/window/concrete/gameWindow";
 import Game from "./game/game";
 
 // 禁止特定按鍵觸發頁面滾動

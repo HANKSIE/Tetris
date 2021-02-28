@@ -13,9 +13,9 @@ export default class Timer {
         this.start();
     }
 
-    private _handle : Function;
+    private _handle : CallableFunction;
 
-    constructor(handle : Function, ms : number) {
+    constructor(handle : CallableFunction, ms : number) {
         this._ms = ms;
         this._handle = handle;
     }

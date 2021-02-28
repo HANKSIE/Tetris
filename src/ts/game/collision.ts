@@ -54,6 +54,10 @@ export default class Collision {
 
     }
 
+    public isCollision(target : Tetris, tetrises: Tetris[]) {
+        return this.isCollisionBoundary(target) || this.isCollisionTetris(target, tetrises);
+    }
+
 }
 
 interface Boundary {

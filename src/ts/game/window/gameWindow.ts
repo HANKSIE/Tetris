@@ -1,4 +1,4 @@
-import Tetris from "../widgets/tetris";
+import Tetris from "../../widgets/tetris";
 
 export default abstract class GameWindow {
 
