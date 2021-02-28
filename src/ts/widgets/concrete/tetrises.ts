@@ -1,6 +1,6 @@
 import Tetris from "../tetris";
 
-class ITetris extends Tetris {
+export class ITetris extends Tetris {
 
     public colorDefine() : string {
         return "#42b0f5";
@@ -17,7 +17,7 @@ class ITetris extends Tetris {
 
 }
 
-class JTetris extends Tetris {
+export class JTetris extends Tetris {
 
     public colorDefine() : string {
         return "#3874ff";
@@ -33,7 +33,7 @@ class JTetris extends Tetris {
 
 }
 
-class LTetris extends Tetris {
+export class LTetris extends Tetris {
     
     public colorDefine() : string {
         return "#ff8e24";
@@ -49,7 +49,7 @@ class LTetris extends Tetris {
 
 }
 
-class OTetris extends Tetris {
+export class OTetris extends Tetris {
 
     public colorDefine() : string {
         return "#fff242";
@@ -64,7 +64,7 @@ class OTetris extends Tetris {
 
 }
 
-class STetris extends Tetris {
+export class STetris extends Tetris {
 
     public colorDefine() : string {
         return "#00de3f";
@@ -80,7 +80,7 @@ class STetris extends Tetris {
 
 }
 
-class TTetris extends Tetris {
+export class TTetris extends Tetris {
 
     public colorDefine() : string {
         return "#e557f7";
@@ -96,7 +96,7 @@ class TTetris extends Tetris {
 
 }
 
-class ZTetris extends Tetris {
+export class ZTetris extends Tetris {
 
     public colorDefine() : string {
         return "#ff1f1f";
@@ -111,7 +111,7 @@ class ZTetris extends Tetris {
     }
 }
 
-const TetrisType = {
+export const Types = {
     ITetris,
     JTetris,
     LTetris,
@@ -120,5 +120,3 @@ const TetrisType = {
     TTetris,
     ZTetris
 }
-
-export default TetrisType;

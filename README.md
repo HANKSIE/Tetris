@@ -1,3 +1,3 @@
 # Tetris in typescript
 
-未完成..
+詳情請見: https://hanksie.github.io/Tetris/dist/
