@@ -119,16 +119,6 @@ export default abstract class Tetris {
         return this._cubes.find(el => el === cube);
     }
 
-    public randomRotateShape() {
-        const rotateTimes : number = Math.floor(Math.random() * 4);
-
-        for(let i=0; i < rotateTimes; i++){
-            this.rotate();
-        }
-       
-        this._currentShape = this._nextShape.slice();
-    }
-
     public rotate(){
         const row = this.height;
         const col = this.width;
@@ -158,20 +148,20 @@ export default abstract class Tetris {
         this._nextShape = newShape;
     }
 
-    public left(){
-        this._nextPos = this.pos.subtractX(1);
+    public left(amount: number = 1){
+        this._nextPos = this.pos.subtractX(amount);
     }
 
-    public right(){
-        this._nextPos = this.pos.plusX(1);
+    public right(amount: number = 1){
+        this._nextPos = this.pos.plusX(amount);
     }
 
-    public up(){
-        this._nextPos = this.pos.subtractY(1);
+    public up(amount: number = 1){
+        this._nextPos = this.pos.subtractY(amount);
     }
 
-    public down(){
-        this._nextPos = this.pos.plusY(1);
+    public down(amount: number = 1){
+        this._nextPos = this.pos.plusY(amount);
     }
 
     public update(){

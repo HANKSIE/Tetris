@@ -38,12 +38,11 @@ export default class Game {
 
     private update = () => {
         GameBehaviorResolver.currTetrisDown(this._context);
-        GameBehaviorResolver.nextTick(this._context);
+        GameBehaviorResolver.nextTick(this._context, true);
         if(this._context.gameover){
             this.stop();
             alert("gameover");
         }
-        this._context.isDown = false;
     }
 
     public start(){

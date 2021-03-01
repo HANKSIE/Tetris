@@ -1,18 +1,3 @@
-// import Tetris from "../widgets/tetris";
-
-// export default interface GameContext {
-
-//     currTetris : Tetris;
-//     tetrises : Tetris[] ;
-//     prepareTetrises : Tetris[];
-//     holdTetris : Tetris | null ;
-
-//     softDown : boolean;
-//     isDown : boolean;
-//     canHold : boolean; 
-//     gameover: boolean
-// }
-
 import TetrisFactory from "../factory/tetris";
 import Timer from "../util/timer";
 import Tetris from "../widgets/tetris";
@@ -40,7 +25,6 @@ export default class GameContext {
     public holdTetris : Tetris | null = null ;
 
     public softDown : boolean = false;
-    public isDown : boolean = false;
     public canHold : boolean = true; 
     public gameover: boolean = false;
 
