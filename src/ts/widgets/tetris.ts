@@ -22,7 +22,7 @@ export default abstract class Tetris {
   
     protected _originPos : Point = PointFactory.createMin();
     protected _pos : Point = PointFactory.createMin();
-    protected _nextPos : Point = PointFactory.createMin();
+    protected _nextPos : Point = PointFactory.createByPoint(this.pos);
 
     protected _cubes : Cube[] = [];
 
@@ -149,24 +149,25 @@ export default abstract class Tetris {
     }
 
     public left(amount: number = 1){
-        this._nextPos = this.pos.subtractX(amount);
+        this._nextPos = this._nextPos.subtractX(amount);
     }
 
     public right(amount: number = 1){
-        this._nextPos = this.pos.plusX(amount);
+        this._nextPos = this._nextPos.plusX(amount);
     }
 
     public up(amount: number = 1){
-        this._nextPos = this.pos.subtractY(amount);
+        this._nextPos = this._nextPos.subtractY(amount);
     }
 
     public down(amount: number = 1){
-        this._nextPos = this.pos.plusY(amount);
+        this._nextPos = this._nextPos.plusY(amount);
     }
 
     public update(){
         this._currentShape = this._nextShape.slice();
         this.pos = PointFactory.createByPoint(this._nextPos);
+        this._nextPos = PointFactory.createByPoint(this.pos);
     }
 
     public back(){
